@@ -6,13 +6,13 @@ This project was developed as the final project for the Full Stack Software Engi
 
 ---
 
-## 🧭 Overview
+##  Overview
 
 Bag of Holding provides players with a complete toolkit for managing their adventures. Users can create and save multiple characters, browse an extensive spell list, and maintain key information such as skills, abilities, and consumables. The application focuses on providing an intuitive layout that helps players stay immersed in the game rather than distracted by paperwork.
 
 ---
 
-## ⚙️ Tech Stack
+##  Tech Stack
 
 - **Frontend:** React, JavaScript, HTML, CSS  
 - **Backend:** Python, Flask, SQLAlchemy  
@@ -21,7 +21,7 @@ Bag of Holding provides players with a complete toolkit for managing their adven
 
 ---
 
-## ✨ Features
+##  Features
 
 - Create and manage custom D&D characters  
 - View and edit individual character details  
@@ -33,7 +33,7 @@ Bag of Holding provides players with a complete toolkit for managing their adven
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 Follow these steps to run the project locally.
 
