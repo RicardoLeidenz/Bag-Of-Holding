@@ -35,10 +35,10 @@ export async function run(b, { email, password }) {
     await clickText("button", "Aria");
     check("select: URL is /character/<id>", await waitFor(`/^\\/character\\/\\d+$/.test(location.pathname)`), await path());
     const sheetPath = await path();
-    check("sheet: shows character name", await waitFor(`document.querySelector("#name")?.innerText === "Aria"`), (await text()).slice(0, 200));
+    check("sheet: shows character name", await waitFor(`document.querySelector("#name")?.value === "Aria"`), (await text()).slice(0, 200));
     await send("Page.reload"); await sleep(800);
     check("refresh: still on same sheet", (await path()) === sheetPath, await path());
-    check("refresh: character reloaded from API", await waitFor(`document.querySelector("#name")?.innerText === "Aria"`), (await text()).slice(0, 200));
+    check("refresh: character reloaded from API", await waitFor(`document.querySelector("#name")?.value === "Aria"`), (await text()).slice(0, 200));
     check("navbar: Character Site links to sheet", await waitFor(`[...document.querySelectorAll("a")].some(a => a.getAttribute("href") === "${sheetPath}")`));
 
     // Unknown character and unknown page

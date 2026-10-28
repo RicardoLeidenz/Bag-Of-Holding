@@ -3,8 +3,8 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import jsonify, Blueprint
 from api.models import db, User, Character, Stat, Skill, Consumable
-from api.utils import (limiter, get_json_body,
-                       require_string, require_int, require_email)
+from api.utils import (APIException, limiter, get_json_body,
+                       require_string, require_int, require_bool, require_email)
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -192,6 +192,9 @@ def update_character():
     hit_dice = require_string(characterInfo, "hitDice", max_length=5, min_length=0, required=False)
     if hit_dice is not None:
         updates["hitDice"] = hit_dice
+    name = require_string(characterInfo, "name", max_length=25, required=False)
+    if name is not None:
+        updates["name"] = name
 
     for field, value in updates.items():
         setattr(character, field, value)
@@ -217,15 +220,50 @@ def delete_character():
 @api.route('/stat', methods=['PUT'])
 @jwt_required()
 def update_stat():
+    # Updates the score ("value"), the saving throw proficiency ("proficient"), or both
     statInfo = get_json_body()
     stat_id = require_int(statInfo, "id", 1, 2**31 - 1)
-    value = require_int(statInfo, "value", 1, 30)
+    value = require_int(statInfo, "value", 1, 30, required=False)
+    proficient = require_bool(statInfo, "proficient", required=False)
+    if value is None and proficient is None:
+        raise APIException("'value' or 'proficient' is required")
     updated_stat = db.session.get(Stat, stat_id)
     if not updated_stat or not get_owned_character(updated_stat.character_id):
         return {"error": "Stat not found"}, 404
-    updated_stat.value = value
+    if value is not None:
+        updated_stat.value = value
+    if proficient is not None:
+        updated_stat.proficient = proficient
     db.session.commit()
     return {"Stat Changed": updated_stat.serialize()}, 200
+
+
+###### SKILL ENDPOINTS ######
+
+@api.route('/skill', methods=['PUT'])
+@jwt_required()
+def update_skill():
+    skillInfo = get_json_body()
+    skill_id = require_int(skillInfo, "id", 1, 2**31 - 1)
+    proficient = require_bool(skillInfo, "proficient", required=False)
+    expert = require_bool(skillInfo, "expert", required=False)
+    if proficient is None and expert is None:
+        raise APIException("'proficient' or 'expert' is required")
+    skill = db.session.get(Skill, skill_id)
+    if not skill or not get_owned_character(skill.character_id):
+        return {"error": "Skill not found"}, 404
+
+    if proficient is not None:
+        skill.proficient = proficient
+    if expert is not None:
+        skill.expert = expert
+    # 5e rule: expertise requires proficiency
+    if expert:
+        skill.proficient = True
+    if proficient is False:
+        skill.expert = False
+    db.session.commit()
+    return {"Skill Changed": skill.serialize()}, 200
 
 
 ###### CONSUMABLES ENDPOINTS ######

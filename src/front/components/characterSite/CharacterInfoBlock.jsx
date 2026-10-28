@@ -1,7 +1,9 @@
+import { useState } from "react";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { CharacterNumberInput } from "./CharacterNumberInput";
 export const CharacterInfoBlock = (props) => {
     const { dispatch } = useGlobalReducer();
+    const [startName, setStartName] = useState(props.name);
     return (
         //  ALL THIS INFORMATION IS SUPPOSED TO BE SELECTED USING THE DND API WITH ALL CHARACTER OPTIONS
         <div>
@@ -11,7 +13,17 @@ export const CharacterInfoBlock = (props) => {
             {/* CHARACTER NAME */}
             <div className="character-info-box m-3">
                 <label htmlFor="name">NAME</label>
-                <h5 id="name">{props.name}</h5>
+                <input
+                    id="name"
+                    type="text"
+                    maxLength={25}
+                    className="character-info-input"
+                    onFocus={() => setStartName(props.name)}
+                    onChange={e => dispatch({ type: "update_character_fields", payload: { name: e.target.value } })}
+                    // A character needs a name: an empty one goes back to what it was
+                    onBlur={() => { if (props.name.trim() === "") dispatch({ type: "update_character_fields", payload: { name: startName } }) }}
+                    value={props.name}
+                />
             </div>
 
             {/* CHARACTER RACE */}

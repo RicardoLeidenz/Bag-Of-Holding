@@ -42,6 +42,21 @@ export const StatBlock = (props) => {
         if (value !== savedValue) saveStat(value);
     }
 
+    // Toggle proficiency in this ability's saving throw (saved immediately)
+    const toggleSaveProficiency = async () => {
+        const response = await apiFetch("api/stat", {
+            method: "PUT",
+            body: JSON.stringify({ "id": props.id, "proficient": !props.proficient }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            alert(data.error || "Could not update " + props.name);
+            return;
+        }
+        const updatedStats = props.stats.map(stat => stat.id === props.id ? { ...stat, proficient: data["Stat Changed"].proficient } : stat);
+        dispatch({ type: "update_stats", payload: { stats: updatedStats } });
+    }
+
     const saveStat = async (value) => {
         const response = await apiFetch("api/stat", {
             method: "PUT",
@@ -80,6 +95,15 @@ export const StatBlock = (props) => {
                     <h4>{check}</h4>
                 </div>
                 <div className="stat-block-info ms-1 text-center">
+                    <button
+                        type="button"
+                        className="proficiency-toggle"
+                        onClick={toggleSaveProficiency}
+                        title={(props.proficient ? "Proficient" : "Not proficient") + " in " + props.name + " saves (click to change)"}
+                        aria-label={`${props.name} saving throw: ${props.proficient ? "proficient" : "not proficient"}`}
+                    >
+                        {props.proficient ? "●" : "○"}
+                    </button>
                     <label>SAV</label>
                     <h4>{saving}</h4>
                 </div>

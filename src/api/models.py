@@ -13,7 +13,7 @@ class User(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
 
-    characters = relationship("Character", back_populates="user")
+    characters = relationship("Character", back_populates="user", order_by="Character.id")
 
     def serialize(self):
         return {
@@ -129,19 +129,22 @@ class Character(db.Model):
     skills = relationship(
         "Skill",
         back_populates="character",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="Skill.id"
     )
 
     consumables = relationship(
         "Consumable",
         back_populates="character",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="Consumable.id"
     )
 
     stats = relationship(
         "Stat",
         back_populates="character",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="Stat.id"
     )
     inventory_links = relationship(
         "CharacterItem",

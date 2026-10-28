@@ -110,3 +110,40 @@ table {
 th {
   border: 5px solid #008080;
 }
+/* PROFICIENCY TOGGLES (skills and saving throws) */
+.proficiency-toggle {
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0 0.35rem 0 0;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.proficiency-toggle:focus-visible {
+  outline: 2px solid #008080;
+  border-radius: 3px;
+}
+/* DELETE CHARACTER */
+.delete-character-button {
+  background: transparent;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  color: #f1a9a0;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  margin: 0.25rem;
+}
+.delete-character-button.confirm {
+  background-color: #c0392b;
+  color: white;
+}
+.cancel-delete-button {
+  background: transparent;
+  border: 1px solid whitesmoke;
+  border-radius: 4px;
+  color: whitesmoke;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  margin: 0.25rem;
+}

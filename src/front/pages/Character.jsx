@@ -5,7 +5,7 @@ import { CharacterStatsBlock } from "../components/characterSite/CharacterStatsB
 import { SkillsTable } from "../components/characterSite/SkillsTable.jsx";
 import { ConsumablesTable } from "../components/characterSite/ConsumablesTable.jsx";
 import { DiceBar } from "../components/characterSite/DiceBar.jsx";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api.js";
 import "../../styles/characterSite.css";
 export const Character = () => {
@@ -14,6 +14,9 @@ export const Character = () => {
     const { id } = useParams();
     const [status, setStatus] = useState("loading") // loading | ready | not_found | error
     const [saveMessage, setSaveMessage] = useState("")
+    const [confirmingDelete, setConfirmingDelete] = useState(false)
+    const [deleteError, setDeleteError] = useState("")
+    const navigate = useNavigate();
 
     let characterInfo = store.characterInfo
 
@@ -28,6 +31,25 @@ export const Character = () => {
             setSaveMessage(response.ok ? "Saved!" : (data.error || "Could not save"));
         } catch (error) {
             setSaveMessage("Could not reach the server");
+        }
+    };
+
+    const deleteCharacter = async () => {
+        setDeleteError("");
+        try {
+            const response = await apiFetch("api/character", {
+                method: "DELETE",
+                body: JSON.stringify({ id: characterInfo.id }),
+            });
+            if (response.ok) {
+                dispatch({ type: "clear_character" });
+                navigate("/characterselection");
+            } else {
+                const data = await response.json();
+                setDeleteError(data.error || "Could not delete character");
+            }
+        } catch (error) {
+            setDeleteError("Could not reach the server");
         }
     };
 
@@ -112,6 +134,19 @@ export const Character = () => {
                 <div className="info-box rounded m-4 p-1">
                     <button className="character-info-box" onClick={saveCharacter}>Save Character</button>
                     {saveMessage ? <p className="text-center m-1" role="status">{saveMessage}</p> : ""}
+                </div>
+                {/* DELETE, with an inline confirmation step */}
+                <div className="m-4 text-center">
+                    {
+                        confirmingDelete
+                            ? <div role="alert">
+                                <p>Really delete {characterInfo.name}? This can't be undone.</p>
+                                <button className="delete-character-button confirm" onClick={deleteCharacter}>Yes, delete</button>
+                                <button className="cancel-delete-button" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+                            </div>
+                            : <button className="delete-character-button" onClick={() => setConfirmingDelete(true)}>Delete character</button>
+                    }
+                    {deleteError ? <p role="status">{deleteError}</p> : ""}
                 </div>
             </div>
         </div>

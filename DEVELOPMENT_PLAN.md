@@ -64,7 +64,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
-| 2.1 | **Character management:** delete with confirmation, rename, editable skill proficient/expert and saving-throw proficiency. Backend routes `PUT /api/skill`, stat `proficient` field, character `name` | Your launch priority #1 | `routes.py`, `CharacterSelection.jsx`, `SkillsTable.jsx`, `StatBlock.jsx`, `CharacterInfoBlock.jsx` | M | pytest plus a manual end-to-end check |
+| 2.1 ✅ | **Character management:** delete with confirmation, rename, editable skill proficient/expert and saving-throw proficiency. Backend routes `PUT /api/skill`, stat `proficient` field, character `name` | Your launch priority #1 | `routes.py`, `CharacterSelection.jsx`, `SkillsTable.jsx`, `StatBlock.jsx`, `CharacterInfoBlock.jsx` | M | pytest plus a manual end-to-end check |
 | 2.2 | **Mobile-friendly layout:** responsive grid (`col-12 col-md-*`), collapsible navbar, stacked spell levels, touch-sized inputs | Your launch priority #2 | `pages/*.jsx`, `src/styles/*.css`, `Navbar.jsx` | M | Browser devtools at 375px, 768px and 1280px |
 | 2.3 | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
 | 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README setup section corrected (project description already rewritten in the fork) | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
@@ -72,6 +72,9 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 | 2.6 | **Production hardening and deploy (Phase 6):** confirm rate limiting sees real client IPs behind Render's proxy (`ProxyFix x_for=1` is an assumption), gunicorn start, build script, prod env vars, CORS limited to the app origin, `FLASK_DEBUG=0`. Hosting: compare Render free web service + Render Postgres (free tier time limits) against Neon free Postgres, confirm current limits, recommend, then **get approval before going public**. Auto-deploy from `main` | Launch | `render.yaml`, `render_build.sh`, `src/app.py` | M | Live smoke test of the full flow plus a mobile check |
 
 **Launch = Priority 1 + Priority 2.**
+
+**2.1 notes:** done — rename, skill proficiency/expertise toggle (●/★), saving-throw toggle, delete with inline confirmation on the sheet. Found and fixed: skills/stats/consumables/characters had no defined order, so PostgreSQL moved edited rows to the end of the list. 65 pytest tests (SQLite + PostgreSQL), 67 browser checks.
+**Seen in screenshots, for 2.2/2.3:** dice-button labels overflow their boxes; `input:focus { outline: none }` hides keyboard focus; new characters start with proficiency +0 (5e level 1 is +2).
 
 ## Priority 3 — Post-launch
 1. **Inventory (first):** Item/CharacterItem API, item catalog (dnd5eapi equipment plus custom items), quantity and equip toggle, a real UI replacing `item.js`. Remove the dead `Inventory.jsx`/`Bag.jsx`.

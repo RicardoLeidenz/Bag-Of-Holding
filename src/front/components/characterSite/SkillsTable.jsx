@@ -1,4 +1,6 @@
 import { skillModifier } from "../../rules.js";
+import { apiFetch } from "../../api.js";
+import useGlobalReducer from "../../hooks/useGlobalReducer";
 export const SkillsTable = (props) => {
     let rows = []
     let skills = props.skillList
@@ -24,11 +26,48 @@ export const SkillsTable = (props) => {
     )
 };
 
-// One skill: name (ability) and its modifier
-const SkillCells = ({ skill, stats, proficiency }) => (
+// Proficiency marker for each level: none → proficient → expertise → none
+const PROFICIENCY_LEVELS = {
+    none: { symbol: "○", label: "Not proficient" },
+    proficient: { symbol: "●", label: "Proficient" },
+    expert: { symbol: "★", label: "Expertise" },
+}
+
+// One skill: proficiency toggle, name (ability) and its modifier
+const SkillCells = ({ skill, stats, proficiency }) => {
+    const { dispatch } = useGlobalReducer();
+    const level = skill.expert ? "expert" : skill.proficient ? "proficient" : "none";
+
+    const cycleProficiency = async () => {
+        // The server keeps the rule that expertise requires proficiency
+        const change = level === "none" ? { proficient: true }
+            : level === "proficient" ? { expert: true }
+            : { proficient: false };
+        const response = await apiFetch("api/skill", {
+            method: "PUT",
+            body: JSON.stringify({ id: skill.id, ...change }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            dispatch({ type: "update_skill", payload: data["Skill Changed"] });
+        } else {
+            alert(data.error || "Could not update " + skill.name);
+        }
+    };
+
+    return (
     <>
         <td>
             <p>
+                <button
+                    type="button"
+                    className="proficiency-toggle"
+                    onClick={cycleProficiency}
+                    title={PROFICIENCY_LEVELS[level].label + " (click to change)"}
+                    aria-label={`${skill.name}: ${PROFICIENCY_LEVELS[level].label}`}
+                >
+                    {PROFICIENCY_LEVELS[level].symbol}
+                </button>
                 <strong>{skill.name}</strong>{' '}({skill.ability})
             </p>
         </td>
@@ -38,4 +77,5 @@ const SkillCells = ({ skill, stats, proficiency }) => (
             </p>
         </td>
     </>
-);
+    );
+};

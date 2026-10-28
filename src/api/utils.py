@@ -66,6 +66,17 @@ def require_int(body, field, minimum, maximum, required=True):
     return value
 
 
+def require_bool(body, field, required=True):
+    if field not in body:
+        if required:
+            raise APIException(f"'{field}' is required")
+        return None
+    value = body[field]
+    if not isinstance(value, bool):
+        raise APIException(f"'{field}' must be true or false")
+    return value
+
+
 def require_email(body, field="email"):
     value = require_string(body, field, max_length=120).lower()
     if not EMAIL_PATTERN.match(value):

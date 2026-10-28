@@ -76,6 +76,23 @@ export default function storeReducer(store, action = {}) {
         },
       };
 
+    case "update_skill":
+      return {
+        ...store,
+        characterInfo: {
+          ...store.characterInfo,
+          skills: store.characterInfo.skills.map((skill) =>
+            skill.id === action.payload.id ? action.payload : skill
+          ),
+        },
+      };
+
+    case "clear_character":
+      return {
+        ...store,
+        characterInfo: {},
+      };
+
     case "update_stats":
       return {
         ...store,

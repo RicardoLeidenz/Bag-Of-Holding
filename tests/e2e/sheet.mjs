@@ -13,12 +13,12 @@ export async function run(b, { token }) {
 
     const openSheet = async () => {
         await goto("/character/" + character.id);
-        await waitFor(`document.querySelector("#name")?.innerText === "Testy"`);
+        await waitFor(`document.querySelector("#name")?.value === "Testy"`);
     };
     await goto("/"); await evaluate(`localStorage.setItem("token", ${JSON.stringify(token)})`);
     await openSheet();
 
-    const skill = name => evaluate(`(() => { const td = [...document.querySelectorAll("td")]; const i = td.findIndex(t => t.innerText.trim().startsWith("${name} (")); return td[i + 1]?.innerText.trim(); })()`);
+    const skill = name => evaluate(`(() => { const td = [...document.querySelectorAll("td")]; const i = td.findIndex(t => t.innerText.includes("${name} (")); return i === -1 ? "skill not found" : td[i + 1]?.innerText.trim(); })()`);
     const statBox = name => `[...document.querySelectorAll(".stat-block-box")].find(x => x.querySelector("h4")?.innerText === "${name}")`;
     const statCell = (name, label) => evaluate(`[...${statBox(name)}.querySelectorAll(".text-center")].find(d => d.innerText.includes("${label}")).querySelector("h4").innerText`);
     const tagStatInput = name => evaluate(`${statBox(name)}.querySelector("input").setAttribute("data-test", "${name}"), true`);
