@@ -58,7 +58,7 @@ def test_cannot_touch_other_users_character(client, make_user, make_character):
     assert client.get(f"/api/character/{char_id}", headers=bob).status_code == 404
     assert client.put("/api/character", headers=bob, json={"id": char_id, "hp": 1}).status_code == 404
     assert client.delete("/api/character", headers=bob, json={"id": char_id}).status_code == 404
-    assert client.put("/api/stat", headers=bob, json={"id": stat_id, "value": 99}).status_code == 404
+    assert client.put("/api/stat", headers=bob, json={"id": stat_id, "value": 18}).status_code == 404
     assert client.post("/api/consumable", headers=bob,
                        json={"character_id": char_id, "name": "Potion"}).status_code == 404
 

@@ -1,8 +1,10 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import request, jsonify, Blueprint
+from flask import jsonify, Blueprint
 from api.models import db, User, Character, Stat, Skill, Consumable
+from api.utils import (limiter, get_json_body,
+                       require_string, require_int, require_email)
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -27,19 +29,29 @@ def get_owned_character(character_id):
         id=character_id, user_id=int(get_jwt_identity())).first()
 
 
+# Editable character fields and their allowed ranges (strings: max length matches the model)
+CHARACTER_INT_FIELDS = {
+    "level": (1, 20),
+    "hp": (0, 9999),
+    "ac": (0, 99),
+    "speed": (0, 999),
+    "initiative": (-99, 99),
+    "proficiency": (0, 20),
+}
+
+
 ###### LOG IN ENDPOINT ######
 
 @api.route('/log_in', methods=['POST'])
+@limiter.limit("5 per minute")
 def handle_log_in():
-    body = request.json
-    new_email = body["email"]
-    new_password = body["password"]
-    user = User.query.filter_by(email=new_email).first()
-    if not user:
-        return jsonify("Matching e-mail not found"), 401
-
-    if not check_password_hash(user.password, new_password):
-        return jsonify("Incorrect password"), 401
+    body = get_json_body()
+    email = require_email(body)
+    password = require_string(body, "password", max_length=128)
+    user = User.query.filter_by(email=email).first()
+    # Same message for unknown email and wrong password, so attackers can't probe which emails exist
+    if not user or not check_password_hash(user.password, password):
+        return {"error": "Invalid email or password"}, 401
 
     token = create_access_token(identity=str(user.id))
 
@@ -55,21 +67,20 @@ def handle_log_in():
 ###### SIGN UP ENDPOINT ######
 
 @api.route('/sign_up', methods=['POST'])
+@limiter.limit("10 per hour")
 def handle_sign_up():
-
-    body = request.json
-    new_email = body["email"]
-    new_password = body["password"]
-    user = User.query.filter_by(email=new_email).first()
-    if user:
-        return {"Error": "User already exists"}, 401
+    body = get_json_body()
+    email = require_email(body)
+    password = require_string(body, "password", min_length=8, max_length=128)
+    if User.query.filter_by(email=email).first():
+        return {"error": "An account with this email already exists"}, 409
     new_user = User(
-        email=new_email,
-        password=generate_password_hash(new_password)
+        email=email,
+        password=generate_password_hash(password)
     )
     db.session.add(new_user)
     db.session.commit()
-    return {"New user successfully created!": new_user.serialize()}, 200
+    return {"message": "New user successfully created!", "user": new_user.serialize()}, 201
 
 
 ###### USER ENDPOINTS ######
@@ -79,7 +90,7 @@ def handle_sign_up():
 def handle_me():
     user = get_current_user()
     if not user:
-        return {"Error": "User not found"}, 401
+        return {"error": "Login required"}, 401
     return {"user": user.serialize()}, 200
 
 
@@ -88,7 +99,7 @@ def handle_me():
 def handle_characters():
     user = get_current_user()
     if not user:
-        return {"Error": "User not found"}, 401
+        return {"error": "Login required"}, 401
     response_body = {
         "characters": [character.serialize() for character in user.characters]
     }
@@ -104,119 +115,100 @@ def get_character(character_id):
     if character:
         return {"character": character.serialize()}, 200
     else:
-        return {"Error": "Character not found"}, 404
+        return {"error": "Character not found"}, 404
 
 
 @api.route('/character', methods=['POST'])
 @jwt_required()
 def add_character():
-    characterInfo = request.json
-    keys = ["name", "race", "characterClass", "subClass"]
-    if all(key in characterInfo for key in keys):
-        new_character = Character(
-            user_id=int(get_jwt_identity()),
-            name=characterInfo["name"],
-            race=characterInfo["race"],
-            characterClass=characterInfo["characterClass"],
-            subClass=characterInfo["subClass"],
+    characterInfo = get_json_body()
+    new_character = Character(
+        user_id=int(get_jwt_identity()),
+        name=require_string(characterInfo, "name", max_length=25),
+        race=require_string(characterInfo, "race", max_length=15),
+        characterClass=require_string(characterInfo, "characterClass", max_length=20),
+        subClass=require_string(characterInfo, "subClass", max_length=20),
+    )
+    db.session.add(new_character)
+    db.session.commit()
+
+    #  INITIALIZE CHARACTER STATS
+    allStats = ["STR", "DEX", "CON", "INT", "WIS", "CHA"]
+    for i in range(len(allStats)):
+        new_stat = Stat(
+            name=allStats[i],
+            character_id=new_character.id
         )
-        db.session.add(new_character)
-        db.session.commit()
+        db.session.add(new_stat)
 
-        #  INITIALIZE CHARACTER STATS
-        allStats = ["STR", "DEX", "CON", "INT", "WIS", "CHA"]
-        for i in range(len(allStats)):
-            new_stat = Stat(
-                name=allStats[i],
-                character_id=new_character.id
-            )
-            db.session.add(new_stat)
+    #  INITIALIZE CHARACTER SKILLS
+    allSkills = [
+        {"name": "ATHLETICS", "ability": "STR"},
+        {"name": "ACROBATICS", "ability": "DEX"},
+        {"name": "SLEIGHT OF HAND", "ability": "DEX"},
+        {"name": "STEALTH", "ability": "DEX"},
+        {"name": "ARCANA", "ability": "INT"},
+        {"name": "HISTORY", "ability": "INT"},
+        {"name": "INVESTIGATION", "ability": "INT"},
+        {"name": "NATURE", "ability": "INT"},
+        {"name": "RELIGION", "ability": "INT"},
+        {"name": "ANIMAL HANDLING", "ability": "WIS"},
+        {"name": "INSIGHT", "ability": "WIS"},
+        {"name": "MEDICINE", "ability": "WIS"},
+        {"name": "PERCEPTION", "ability": "WIS"},
+        {"name": "SURVIVAL", "ability": "WIS"},
+        {"name": "DECEPTION", "ability": "CHA"},
+        {"name": "INTIMIDATION", "ability": "CHA"},
+        {"name": "PERFORMANCE", "ability": "CHA"},
+        {"name": "PERSUASION", "ability": "CHA"}
+    ]
 
-        #  INITIALIZE CHARACTER SKILLS
-        allSkills = [
-            {"name": "ATHLETICS", "ability": "STR"},
-            {"name": "ACROBATICS", "ability": "DEX"},
-            {"name": "SLEIGHT OF HAND", "ability": "DEX"},
-            {"name": "STEALTH", "ability": "DEX"},
-            {"name": "ARCANA", "ability": "INT"},
-            {"name": "HISTORY", "ability": "INT"},
-            {"name": "INVESTIGATION", "ability": "INT"},
-            {"name": "NATURE", "ability": "INT"},
-            {"name": "RELIGION", "ability": "INT"},
-            {"name": "ANIMAL HANDLING", "ability": "WIS"},
-            {"name": "INSIGHT", "ability": "WIS"},
-            {"name": "MEDICINE", "ability": "WIS"},
-            {"name": "PERCEPTION", "ability": "WIS"},
-            {"name": "SURVIVAL", "ability": "WIS"},
-            {"name": "DECEPTION", "ability": "CHA"},
-            {"name": "INTIMIDATION", "ability": "CHA"},
-            {"name": "PERFORMANCE", "ability": "CHA"},
-            {"name": "PERSUASION", "ability": "CHA"}
-        ]
+    for skill in allSkills:
+        new_skill = Skill(
+            name=skill["name"],
+            ability=skill["ability"],
+            character_id=new_character.id
+        )
+        db.session.add(new_skill)
 
-        for skill in allSkills:
-            new_skill = Skill(
-                name=skill["name"],
-                ability=skill["ability"],
-                character_id=new_character.id
-            )
-            db.session.add(new_skill)
-
-        db.session.commit()
-        return {"character": new_character.serialize()}, 201
-    else:
-        return {"Error": "Wrong information submitted"}, 400
+    db.session.commit()
+    return {"character": new_character.serialize()}, 201
 
 
 @api.route('/character', methods=['PUT'])
 @jwt_required()
 def update_character():
-    characterInfo = request.json
-    if "id" in characterInfo:
-        character = get_owned_character(characterInfo["id"])
-        if character:
-            if "level" in characterInfo:
-                character.level = characterInfo["level"]
+    characterInfo = get_json_body()
+    character = get_owned_character(require_int(characterInfo, "id", 1, 2**31 - 1))
+    if not character:
+        return {"error": "Character not found"}, 404
 
-            if "hp" in characterInfo:
-                character.hp = characterInfo["hp"]
+    # Validate every field before changing anything, so a bad value can't cause a partial update
+    updates = {}
+    for field, (minimum, maximum) in CHARACTER_INT_FIELDS.items():
+        value = require_int(characterInfo, field, minimum, maximum, required=False)
+        if value is not None:
+            updates[field] = value
+    hit_dice = require_string(characterInfo, "hitDice", max_length=5, min_length=0, required=False)
+    if hit_dice is not None:
+        updates["hitDice"] = hit_dice
 
-            if "ac" in characterInfo:
-                character.ac = characterInfo["ac"]
-
-            if "hitDice" in characterInfo:
-                character.hitDice = characterInfo["hitDice"]
-
-            if "speed" in characterInfo:
-                character.speed = characterInfo["speed"]
-
-            if "initiative" in characterInfo:
-                character.initiative = characterInfo["initiative"]
-
-            if "proficiency" in characterInfo:
-                character.proficiency = characterInfo["proficiency"]
-            db.session.commit()
-            return {"Character updated": character.serialize()}, 201
-        else:
-            return {"Error": "Character not found"}, 404
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    for field, value in updates.items():
+        setattr(character, field, value)
+    db.session.commit()
+    return {"Character updated": character.serialize()}, 200
 
 
 @api.route('/character', methods=['DELETE'])
 @jwt_required()
 def delete_character():
-    characterInfo = request.json
-    if "id" in characterInfo:
-        character = get_owned_character(characterInfo["id"])
-        if character:
-            db.session.delete(character)
-            db.session.commit()
-            return {"Character deleted": character.serialize()}, 200
-        else:
-            return {"Error": "Character not found"}, 404
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    characterInfo = get_json_body()
+    character = get_owned_character(require_int(characterInfo, "id", 1, 2**31 - 1))
+    if not character:
+        return {"error": "Character not found"}, 404
+    db.session.delete(character)
+    db.session.commit()
+    return {"Character deleted": character.serialize()}, 200
 
 
 ###### STAT ENDPOINTS ######
@@ -225,18 +217,15 @@ def delete_character():
 @api.route('/stat', methods=['PUT'])
 @jwt_required()
 def update_stat():
-    statInfo = request.json
-    keys = ["id", "value"]
-    if all(key in statInfo for key in keys):
-        updated_stat = db.session.get(Stat, statInfo["id"])
-        if updated_stat and get_owned_character(updated_stat.character_id):
-            updated_stat.value = statInfo["value"]
-            db.session.commit()
-            return {"Stat Changed": updated_stat.serialize()}, 200
-        else:
-            return {"Error": "Stat not found"}, 404
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    statInfo = get_json_body()
+    stat_id = require_int(statInfo, "id", 1, 2**31 - 1)
+    value = require_int(statInfo, "value", 1, 30)
+    updated_stat = db.session.get(Stat, stat_id)
+    if not updated_stat or not get_owned_character(updated_stat.character_id):
+        return {"error": "Stat not found"}, 404
+    updated_stat.value = value
+    db.session.commit()
+    return {"Stat Changed": updated_stat.serialize()}, 200
 
 
 ###### CONSUMABLES ENDPOINTS ######
@@ -244,50 +233,39 @@ def update_stat():
 @api.route('/consumable', methods=['POST'])
 @jwt_required()
 def add_consumable():
-    consumableInfo = request.json
-    keys = ["character_id", "name"]
-    if all(key in consumableInfo for key in keys):
-        if not get_owned_character(consumableInfo["character_id"]):
-            return {"Error": "Character not found"}, 404
-        new_consumable = Consumable(
-            character_id=consumableInfo["character_id"],
-            name=consumableInfo["name"]
-        )
-        db.session.add(new_consumable)
-        db.session.commit()
-        return {"Consumable Created": new_consumable.serialize()}, 200
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    consumableInfo = get_json_body()
+    character_id = require_int(consumableInfo, "character_id", 1, 2**31 - 1)
+    name = require_string(consumableInfo, "name", max_length=25)
+    if not get_owned_character(character_id):
+        return {"error": "Character not found"}, 404
+    new_consumable = Consumable(character_id=character_id, name=name)
+    db.session.add(new_consumable)
+    db.session.commit()
+    return {"Consumable Created": new_consumable.serialize()}, 201
 
 
 @api.route('/consumable', methods=['PUT'])
 @jwt_required()
 def update_consumable():
-    consumableInfo = request.json
-    keys = ["id", "amount"]
-    if all(key in consumableInfo for key in keys):
-        updated_consumable = db.session.get(Consumable, consumableInfo["id"])
-        if updated_consumable and get_owned_character(updated_consumable.character_id):
-            updated_consumable.amount = consumableInfo["amount"]
-            db.session.commit()
-            return {"Consumable Changed": updated_consumable.serialize()}, 200
-        else:
-            return {"Error": "Consumable not found"}, 404
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    consumableInfo = get_json_body()
+    consumable_id = require_int(consumableInfo, "id", 1, 2**31 - 1)
+    amount = require_int(consumableInfo, "amount", 0, 9999)
+    updated_consumable = db.session.get(Consumable, consumable_id)
+    if not updated_consumable or not get_owned_character(updated_consumable.character_id):
+        return {"error": "Consumable not found"}, 404
+    updated_consumable.amount = amount
+    db.session.commit()
+    return {"Consumable Changed": updated_consumable.serialize()}, 200
 
 
 @api.route('/consumable', methods=['DELETE'])
 @jwt_required()
 def delete_consumable():
-    consumableInfo = request.json
-    if "id" in consumableInfo:
-        consumable_to_delete = db.session.get(Consumable, consumableInfo["id"])
-        if consumable_to_delete and get_owned_character(consumable_to_delete.character_id):
-            db.session.delete(consumable_to_delete)
-            db.session.commit()
-            return {"Consumable Deleted": consumable_to_delete.serialize()}, 200
-        else:
-            return {"Error": "Consumable not found"}, 404
-    else:
-        return {"Error": "Wrong information submitted "}, 400
+    consumableInfo = get_json_body()
+    consumable_to_delete = db.session.get(
+        Consumable, require_int(consumableInfo, "id", 1, 2**31 - 1))
+    if not consumable_to_delete or not get_owned_character(consumable_to_delete.character_id):
+        return {"error": "Consumable not found"}, 404
+    db.session.delete(consumable_to_delete)
+    db.session.commit()
+    return {"Consumable Deleted": consumable_to_delete.serialize()}, 200

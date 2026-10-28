@@ -3,7 +3,7 @@ from flask_jwt_extended import decode_token
 
 def test_sign_up_and_log_in(client):
     response = client.post("/api/sign_up", json={"email": "a@test.com", "password": "pw123456"})
-    assert response.status_code == 200
+    assert response.status_code == 201
 
     response = client.post("/api/log_in", json={"email": "a@test.com", "password": "pw123456"})
     assert response.status_code == 200

@@ -82,6 +82,7 @@ export default function InputForm() {
                 name="password"
                 onChange={handleInput}
                 value={formInput.password}
+                minLength={mode === "signup" ? 8 : undefined}
                 required
               />
             </div>

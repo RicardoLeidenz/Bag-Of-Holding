@@ -9,6 +9,13 @@ os.environ["FLASK_DEBUG"] = "1"
 import pytest
 from app import app as flask_app
 from api.models import db
+from api.utils import limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limits():
+    # Rate-limit counters live in memory for the whole test run; start each test fresh
+    limiter.reset()
 
 
 @pytest.fixture

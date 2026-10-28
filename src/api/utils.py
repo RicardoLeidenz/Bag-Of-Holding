@@ -1,4 +1,13 @@
-from flask import jsonify, url_for
+import re
+from flask import jsonify, url_for, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+# Rate limiter shared by the app and the routes. Counts are kept in memory,
+# which is fine for a single server process.
+limiter = Limiter(get_remote_address, storage_uri="memory://")
+
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 class APIException(Exception):
     status_code = 400
@@ -12,8 +21,56 @@ class APIException(Exception):
 
     def to_dict(self):
         rv = dict(self.payload or ())
-        rv['message'] = self.message
+        rv['error'] = self.message
         return rv
+
+
+###### REQUEST VALIDATION ######
+# Each helper raises APIException (returned to the client as a 400 JSON error)
+# when the value is missing or invalid, so routes can read fields in one line.
+
+def get_json_body():
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        raise APIException("Request body must be a JSON object")
+    return body
+
+
+def require_string(body, field, max_length, min_length=1, required=True):
+    if field not in body:
+        if required:
+            raise APIException(f"'{field}' is required")
+        return None
+    value = body[field]
+    if not isinstance(value, str):
+        raise APIException(f"'{field}' must be text")
+    value = value.strip()
+    if len(value) < min_length:
+        raise APIException(f"'{field}' must be at least {min_length} characters")
+    if len(value) > max_length:
+        raise APIException(f"'{field}' must be at most {max_length} characters")
+    return value
+
+
+def require_int(body, field, minimum, maximum, required=True):
+    if field not in body:
+        if required:
+            raise APIException(f"'{field}' is required")
+        return None
+    value = body[field]
+    # bool is a subclass of int in Python, so reject it explicitly
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise APIException(f"'{field}' must be a whole number")
+    if value < minimum or value > maximum:
+        raise APIException(f"'{field}' must be between {minimum} and {maximum}")
+    return value
+
+
+def require_email(body, field="email"):
+    value = require_string(body, field, max_length=120).lower()
+    if not EMAIL_PATTERN.match(value):
+        raise APIException(f"'{field}' must be a valid email address")
+    return value
 
 def has_no_empty_params(rule):
     defaults = rule.defaults if rule.defaults is not None else ()

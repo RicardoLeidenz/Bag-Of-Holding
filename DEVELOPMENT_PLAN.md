@@ -36,7 +36,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
-**Progress:** 1.1 ✅ · 1.2 ✅ (with first 21 pytest tests, part of 1.9)
+**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ (49 pytest tests so far, part of 1.9) · from 1.7: Hit Dice prop fixed
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
@@ -52,7 +52,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 **Task 1.7 bug list:**
 - `SkillsTable.jsx:47` uses the wrong ability (`pair[0]` should be `pair[1]`).
-- `Character.jsx:43` passes HP into the Hit Dice field.
+- ~~`Character.jsx:43` passes HP into the Hit Dice field.~~ Fixed early in 1.4 (validation would otherwise reject saves).
 - The `state` → `store` typos in `store.js`.
 - Props copied into local state go stale; fix by keying components on the character id.
 - `ConsumablesTable` makes POST calls inside a setState updater and drops the new consumable's id.
@@ -68,7 +68,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 | 2.3 | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
 | 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README setup section corrected (project description already rewritten in the fork) | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
 | 2.5 | **Quality gates:** `npm run lint` clean, GitHub Actions CI running pytest + `npm run build` on each push or PR | Catches regressions automatically | `.github/workflows/ci.yml` (new) | S | Green CI run on the fork |
-| 2.6 | **Production hardening and deploy (Phase 6):** gunicorn start, build script, prod env vars, CORS limited to the app origin, `FLASK_DEBUG=0`. Hosting: compare Render free web service + Render Postgres (free tier time limits) against Neon free Postgres, confirm current limits, recommend, then **get approval before going public**. Auto-deploy from `main` | Launch | `render.yaml`, `render_build.sh`, `src/app.py` | M | Live smoke test of the full flow plus a mobile check |
+| 2.6 | **Production hardening and deploy (Phase 6):** confirm rate limiting sees real client IPs behind Render's proxy (`ProxyFix x_for=1` is an assumption), gunicorn start, build script, prod env vars, CORS limited to the app origin, `FLASK_DEBUG=0`. Hosting: compare Render free web service + Render Postgres (free tier time limits) against Neon free Postgres, confirm current limits, recommend, then **get approval before going public**. Auto-deploy from `main` | Launch | `render.yaml`, `render_build.sh`, `src/app.py` | M | Live smoke test of the full flow plus a mobile check |
 
 **Launch = Priority 1 + Priority 2.**
 
@@ -96,11 +96,11 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 | Squashed migration builds a fresh DB | **Verified** on SQLite (Postgres still to check) |
 | `GET /api/user` lists all users + characters with no token | **Verified** → fixed in 1.2 (route removed) |
 | Any user's characters readable/editable with no token (`/user/<id>/characters`, `PUT /character`, `PUT /stat`) | **Verified** → fixed in 1.2 (tests in `tests/test_authorization.py`) |
-| `/admin/` open | **Verified** (HTTP 200) |
-| Missing field on signup → 500 `KeyError` | **Verified** |
+| `/admin/` open | **Verified** (HTTP 200) → fixed in 1.3 (development only) |
+| Missing field on signup → 500 `KeyError` | **Verified** → fixed in 1.4 (400 with message) |
 | `/api/verify_token` → 500 `NameError` | **Verified** → fixed in 1.2 (replaced by `GET /api/me`) |
 | Integer JWT identity can't be decoded (jwt-extended 4.7.1) | **Verified** → fixed in 1.2 (identity is `str(user.id)`) |
-| Duplicate signup rejected | Verified, but returns 401 (should be 409) |
+| Duplicate signup rejected | Verified, returned 401 → fixed in 1.4 (409) |
 | Over-length names → DB error | **Not reproduced** on SQLite (doesn't enforce lengths); expected on Postgres |
 | `npm run build` | **Passes** |
 | `npm run lint` | Was broken (invalid `.eslintrc`). Fixed in 1.1 → now reports 77 problems (18 errors, 59 warnings), cleaned up in 2.5 |
