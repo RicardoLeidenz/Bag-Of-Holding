@@ -36,14 +36,14 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
-**Progress:** 1.1 ✅
+**Progress:** 1.1 ✅ · 1.2 ✅ (with first 21 pytest tests, part of 1.9)
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
 | 1.1 | **Dependency/config cleanup:** delete the stale `requirements.txt`, align Python 3.13 in `render.yaml` and the README, remove the broken `Dockerfile.render`, `public/bundle.js` and the babel block in `package.json`, fix the invalid `.eslintrc`, review `npm audit`, add `JWT_SECRET_KEY` to `.env.example` | Today's Render build would fail; stale files mislead | `requirements.txt`, `render.yaml`, `package.json`, `Dockerfile.render`, `public/`, `.env.example`, `README.md` | S | Fresh `pipenv install` and `npm run build` succeed |
 | 1.2 | **Auth on the API:** `JWT_SECRET_KEY` from env (refuse to start in prod without it), identity `str(user.id)`, `@jwt_required()` on all data routes, user taken from the token instead of the request body, ownership checks for character → stat/skill/consumable. Replace `GET /api/user` and the broken `/verify_token` with `GET /api/me`. Add `GET /api/character/<id>` | Anyone can currently read, edit or delete anyone's data | `src/app.py`, `src/api/routes.py` | M | pytest: 401 without a token; 404 for another user's character |
 | 1.3 | **Lock `/admin`:** register it only when `FLASK_DEBUG=1` | Gives full DB write access publicly | `src/api/admin.py`, `src/app.py` | S | Prod mode `/admin` → SPA/404; dev still works |
-| 1.4 | **Validation and errors:** shared body-validation helper, consistent `{"error": ...}` JSON, length/type checks that match column limits, email format, password minimum length, duplicate email → 409, JSON 500 handler. Add login rate limiting via **Flask-Limiter (new dependency, will ask)** | Bad input currently causes 500s; public sites need brute-force protection | `src/api/routes.py`, `src/api/utils.py` | M | pytest cases for missing/oversized fields |
+| 1.4 | **Validation and errors:** shared body-validation helper, consistent `{"error": ...}` JSON, length/type checks that match column limits, email format, password minimum length, duplicate email → 409, JSON 500 handler, JSON 404 for unknown `/api/*` paths (they currently fall through to the SPA with 200). Add login rate limiting via **Flask-Limiter (new dependency, will ask)** | Bad input currently causes 500s; public sites need brute-force protection | `src/api/routes.py`, `src/api/utils.py` | M | pytest cases for missing/oversized fields |
 | 1.5 | **Frontend API client:** one `src/front/api.js` wrapper (base URL normalization, same-origin default in prod, `Authorization` header, 401 → logout) used everywhere. Remove the `BackendURL` gate | 7 copies of raw `fetch`; deploys break on a missing trailing slash | `src/front/api.js` (new), `main.jsx`, the pages and components that call `fetch` | M | Build passes; all flows work in the browser |
 | 1.6 | **Session and routing:** store loads the token from localStorage; `ProtectedRoute`; character page at `/character/:id` loads from the API (fixes data loss on refresh); 404 element | Refresh loses or crashes the sheet; logged-out users can open pages | `store.js`, `routes.jsx`, `pages/Character.jsx`, `pages/CharacterSelection.jsx`, `Navbar.jsx` | M | Refresh on the sheet keeps the data; logged out → redirect to login |
 | 1.7 | **Sheet bug fixes:** see the list below this table | Wrong game numbers and duplicate data | `characterSite/*`, `store.js`, `pages/Character.jsx`, `characterCreation/SubclassSelector.jsx` | M | Manual check against hand-computed modifiers; no duplicate consumables |
@@ -94,12 +94,12 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 | Finding | Status |
 |---|---|
 | Squashed migration builds a fresh DB | **Verified** on SQLite (Postgres still to check) |
-| `GET /api/user` lists all users + characters with no token | **Verified** |
-| Any user's characters readable/editable with no token (`/user/<id>/characters`, `PUT /character`, `PUT /stat`) | **Verified** |
+| `GET /api/user` lists all users + characters with no token | **Verified** → fixed in 1.2 (route removed) |
+| Any user's characters readable/editable with no token (`/user/<id>/characters`, `PUT /character`, `PUT /stat`) | **Verified** → fixed in 1.2 (tests in `tests/test_authorization.py`) |
 | `/admin/` open | **Verified** (HTTP 200) |
 | Missing field on signup → 500 `KeyError` | **Verified** |
-| `/api/verify_token` → 500 `NameError` | **Verified** |
-| Integer JWT identity can't be decoded (jwt-extended 4.7.1) | **Verified** (`InvalidSubjectError: Subject must be a string`) |
+| `/api/verify_token` → 500 `NameError` | **Verified** → fixed in 1.2 (replaced by `GET /api/me`) |
+| Integer JWT identity can't be decoded (jwt-extended 4.7.1) | **Verified** → fixed in 1.2 (identity is `str(user.id)`) |
 | Duplicate signup rejected | Verified, but returns 401 (should be 409) |
 | Over-length names → DB error | **Not reproduced** on SQLite (doesn't enforce lengths); expected on Postgres |
 | `npm run build` | **Passes** |

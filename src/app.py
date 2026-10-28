@@ -20,7 +20,14 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-#JWT Manager
+# JWT configuration: tokens are signed with JWT_SECRET_KEY, which must never be committed
+jwt_secret = os.getenv("JWT_SECRET_KEY")
+if not jwt_secret:
+    if ENV == "production":
+        raise RuntimeError("JWT_SECRET_KEY environment variable is required in production")
+    jwt_secret = "dev-only-insecure-jwt-key"
+    print("WARNING: JWT_SECRET_KEY not set, using an insecure development key")
+app.config["JWT_SECRET_KEY"] = jwt_secret
 jwt = JWTManager(app)
 
 # database condiguration

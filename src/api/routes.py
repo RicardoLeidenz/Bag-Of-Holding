@@ -1,9 +1,8 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import request, jsonify, Blueprint
 from api.models import db, User, Character, Stat, Skill, Consumable
-from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -12,6 +11,20 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+
+###### HELPERS ######
+
+def get_current_user():
+    # The token's identity is the user id as a string (set in handle_log_in)
+    return db.session.get(User, int(get_jwt_identity()))
+
+
+def get_owned_character(character_id):
+    # Returns the character only if it belongs to the logged-in user, otherwise None.
+    # Other users' characters are reported as "not found" so their existence isn't revealed.
+    return db.session.query(Character).filter_by(
+        id=character_id, user_id=int(get_jwt_identity())).first()
 
 
 ###### LOG IN ENDPOINT ######
@@ -28,19 +41,13 @@ def handle_log_in():
     if not check_password_hash(user.password, new_password):
         return jsonify("Incorrect password"), 401
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=str(user.id))
 
     response_body = {
         "message": "Welcome back, adventurer!",
         "user": user.serialize(),
         "token": token
     }
-
-    return jsonify(response_body), 200
-
-
-@api.route('/verify_token', methods=['POST'])
-def verify_token():
 
     return jsonify(response_body), 200
 
@@ -67,18 +74,21 @@ def handle_sign_up():
 
 ###### USER ENDPOINTS ######
 
-@api.route('/user', methods=['GET'])
-def handle_users():
-    users = User.query.all()
-    response_body = {
-        "users": [item.serialize() for item in users]
-    }
-    return jsonify(response_body), 200
+@api.route('/me', methods=['GET'])
+@jwt_required()
+def handle_me():
+    user = get_current_user()
+    if not user:
+        return {"Error": "User not found"}, 401
+    return {"user": user.serialize()}, 200
 
 
-@api.route('/user/<int:user_id>/characters', methods=['GET'])
-def handle_characters(user_id):
-    user = db.session.get(User, user_id)
+@api.route('/characters', methods=['GET'])
+@jwt_required()
+def handle_characters():
+    user = get_current_user()
+    if not user:
+        return {"Error": "User not found"}, 401
     response_body = {
         "characters": [character.serialize() for character in user.characters]
     }
@@ -87,28 +97,24 @@ def handle_characters(user_id):
 
 ###### CHARACTER ENDPOINTS ######
 
-@api.route('/character', methods=['GET'])
-def get_character():
-    characterInfo = request.json
-    keys = ["user_id", "id"]
-    if all(key in characterInfo for key in keys):
-        character = db.session.query(Character).filter_by(
-            id=characterInfo["id"], user_id=characterInfo["user_id"]).first()
-        if character:
-            return {"Character found": character.serialize()}, 201
-        else:
-            return {"Error": "Character not found"}, 404
+@api.route('/character/<int:character_id>', methods=['GET'])
+@jwt_required()
+def get_character(character_id):
+    character = get_owned_character(character_id)
+    if character:
+        return {"character": character.serialize()}, 200
     else:
-        return {"Error": "Wrong information submitted"}, 400
+        return {"Error": "Character not found"}, 404
 
 
 @api.route('/character', methods=['POST'])
+@jwt_required()
 def add_character():
     characterInfo = request.json
-    keys = ["user_id", "name", "race", "characterClass", "subClass"]
+    keys = ["name", "race", "characterClass", "subClass"]
     if all(key in characterInfo for key in keys):
         new_character = Character(
-            user_id=characterInfo["user_id"],
+            user_id=int(get_jwt_identity()),
             name=characterInfo["name"],
             race=characterInfo["race"],
             characterClass=characterInfo["characterClass"],
@@ -126,7 +132,7 @@ def add_character():
             )
             db.session.add(new_stat)
 
-        #  INITIALIZE CHARACTER STATS
+        #  INITIALIZE CHARACTER SKILLS
         allSkills = [
             {"name": "ATHLETICS", "ability": "STR"},
             {"name": "ACROBATICS", "ability": "DEX"},
@@ -163,12 +169,11 @@ def add_character():
 
 
 @api.route('/character', methods=['PUT'])
+@jwt_required()
 def update_character():
     characterInfo = request.json
-    keys = ["user_id", "id"]
-    if all(key in characterInfo for key in keys):
-        character = db.session.query(Character).filter_by(
-            id=characterInfo["id"], user_id=characterInfo["user_id"]).first()
+    if "id" in characterInfo:
+        character = get_owned_character(characterInfo["id"])
         if character:
             if "level" in characterInfo:
                 character.level = characterInfo["level"]
@@ -199,12 +204,11 @@ def update_character():
 
 
 @api.route('/character', methods=['DELETE'])
+@jwt_required()
 def delete_character():
     characterInfo = request.json
-    keys = ["user_id", "id"]
-    if all(key in characterInfo for key in keys):
-        character = db.session.query(Character).filter_by(
-            id=characterInfo["id"], user_id=characterInfo["user_id"]).first()
+    if "id" in characterInfo:
+        character = get_owned_character(characterInfo["id"])
         if character:
             db.session.delete(character)
             db.session.commit()
@@ -219,12 +223,13 @@ def delete_character():
 
 
 @api.route('/stat', methods=['PUT'])
+@jwt_required()
 def update_stat():
     statInfo = request.json
     keys = ["id", "value"]
     if all(key in statInfo for key in keys):
         updated_stat = db.session.get(Stat, statInfo["id"])
-        if updated_stat:
+        if updated_stat and get_owned_character(updated_stat.character_id):
             updated_stat.value = statInfo["value"]
             db.session.commit()
             return {"Stat Changed": updated_stat.serialize()}, 200
@@ -237,10 +242,13 @@ def update_stat():
 ###### CONSUMABLES ENDPOINTS ######
 
 @api.route('/consumable', methods=['POST'])
+@jwt_required()
 def add_consumable():
     consumableInfo = request.json
     keys = ["character_id", "name"]
     if all(key in consumableInfo for key in keys):
+        if not get_owned_character(consumableInfo["character_id"]):
+            return {"Error": "Character not found"}, 404
         new_consumable = Consumable(
             character_id=consumableInfo["character_id"],
             name=consumableInfo["name"]
@@ -253,12 +261,13 @@ def add_consumable():
 
 
 @api.route('/consumable', methods=['PUT'])
+@jwt_required()
 def update_consumable():
     consumableInfo = request.json
     keys = ["id", "amount"]
     if all(key in consumableInfo for key in keys):
         updated_consumable = db.session.get(Consumable, consumableInfo["id"])
-        if updated_consumable:
+        if updated_consumable and get_owned_character(updated_consumable.character_id):
             updated_consumable.amount = consumableInfo["amount"]
             db.session.commit()
             return {"Consumable Changed": updated_consumable.serialize()}, 200
@@ -269,11 +278,12 @@ def update_consumable():
 
 
 @api.route('/consumable', methods=['DELETE'])
+@jwt_required()
 def delete_consumable():
     consumableInfo = request.json
     if "id" in consumableInfo:
         consumable_to_delete = db.session.get(Consumable, consumableInfo["id"])
-        if consumable_to_delete:
+        if consumable_to_delete and get_owned_character(consumable_to_delete.character_id):
             db.session.delete(consumable_to_delete)
             db.session.commit()
             return {"Consumable Deleted": consumable_to_delete.serialize()}, 200

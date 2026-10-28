@@ -6,10 +6,10 @@ import { SkillsTable } from "../components/characterSite/SkillsTable.jsx";
 import { ConsumablesTable } from "../components/characterSite/ConsumablesTable.jsx";
 import { DiceBar } from "../components/characterSite/DiceBar.jsx";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../api.js";
 import "../../styles/characterSite.css";
 export const Character = () => {
     const { store, dispatch } = useGlobalReducer()
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const navigate = useNavigate();
 
     let characterInfo = store.characterInfo
@@ -21,9 +21,8 @@ export const Character = () => {
     }
 
     const saveCharacter = async (e) => {
-        const response = await fetch(backendUrl + "api/character", {
+        const response = await apiFetch("api/character", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(characterInfo),
         });
         console.log(response);

@@ -5,11 +5,11 @@ import { NameSelector } from "../components/characterCreation/NameSelector.jsx";
 import { RaceSelector } from "../components/characterCreation/RaceSelector.jsx";
 import { ClassSelector } from "../components/characterCreation/ClassSelector.jsx";
 import { SubclassSelector } from "../components/characterCreation/SubclassSelector.jsx";
+import { apiFetch } from "../api.js";
 import "../../styles/characterCreator.css";
 
 export const CharacterCreator = () => {
     const { store, dispatch } = useGlobalReducer()
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [selectedInput, setSelectedInput] = useState("NAME")
     const [characterName, setCharacterName] = useState("")
     const [characterRace, setCharacterRace] = useState("")
@@ -21,12 +21,10 @@ export const CharacterCreator = () => {
 
     const saveCharacter = async (e) => {
         if (characterName && characterRace && characterClass && characterSubClass) {
-            const response = await fetch(backendUrl + "api/character", {
+            const response = await apiFetch("api/character", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(
                     {
-                        "user_id": store.user_id,
                         "name": characterName,
                         "race": characterRace,
                         "characterClass": characterClass,

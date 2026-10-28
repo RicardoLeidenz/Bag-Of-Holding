@@ -1,8 +1,8 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { useState } from "react";
+import { apiFetch } from "../../api.js";
 export const StatBlock = (props) => {
     const { store, dispatch } = useGlobalReducer()
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [statValue, setStatValue] = useState(props.value);
     const check = (Math.floor((statValue - 10) / 2))
     const saving = props.proficient ? check + props.proficiency : check
@@ -19,9 +19,8 @@ export const StatBlock = (props) => {
     }
 
     const updateStat = async (value) => {
-        const response = await fetch(backendUrl + "api/stat", {
+        const response = await apiFetch("api/stat", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "id": props.id,
                 "value": value
