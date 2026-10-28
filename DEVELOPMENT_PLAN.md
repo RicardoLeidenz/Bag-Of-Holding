@@ -21,7 +21,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 ---
 
 ## Step 0 — Setup (first actions after approval)
-1. **Fork:** the user forks `4GeeksAcademy/Bag-Of-Holding` on GitHub (or I run `gh repo fork` with approval).
+1. **Fork:** done — `origin` = github.com/RicardoLeidenz/Bag-Of-Holding, `upstream` = 4GeeksAcademy. Local `main` = `finalize-project` + fork README commits (not yet pushed).
    - Re-point `origin` to the fork and keep `upstream` pointing at the original.
    - Merge `origin/finalize-project` into `main`, fast-forwarding if possible.
 2. **Write the roadmap:** save it as `DEVELOPMENT_PLAN.md` at the repo root and commit it on branch `docs/development-plan`.
@@ -64,7 +64,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 | 2.1 | **Character management:** delete with confirmation, rename, editable skill proficient/expert and saving-throw proficiency. Backend routes `PUT /api/skill`, stat `proficient` field, character `name` | Your launch priority #1 | `routes.py`, `CharacterSelection.jsx`, `SkillsTable.jsx`, `StatBlock.jsx`, `CharacterInfoBlock.jsx` | M | pytest plus a manual end-to-end check |
 | 2.2 | **Mobile-friendly layout:** responsive grid (`col-12 col-md-*`), collapsible navbar, stacked spell levels, touch-sized inputs | Your launch priority #2 | `pages/*.jsx`, `src/styles/*.css`, `Navbar.jsx` | M | Browser devtools at 375px, 768px and 1280px |
 | 2.3 | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
-| 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README rewritten for this project | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
+| 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README setup section corrected (project description already rewritten in the fork) | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
 | 2.5 | **Quality gates:** `npm run lint` clean, GitHub Actions CI running pytest + `npm run build` on each push or PR | Catches regressions automatically | `.github/workflows/ci.yml` (new) | S | Green CI run on the fork |
 | 2.6 | **Production hardening and deploy (Phase 6):** gunicorn start, build script, prod env vars, CORS limited to the app origin, `FLASK_DEBUG=0`. Hosting: compare Render free web service + Render Postgres (free tier time limits) against Neon free Postgres, confirm current limits, recommend, then **get approval before going public**. Auto-deploy from `main` | Launch | `render.yaml`, `render_build.sh`, `src/app.py` | M | Live smoke test of the full flow plus a mobile check |
 
