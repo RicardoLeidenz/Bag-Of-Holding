@@ -75,6 +75,8 @@ if ENV == "development":
 # add the CLI commands
 setup_commands(app)
 
+# Rate limiting is on unless RATELIMIT_ENABLED=false (only for local end-to-end test runs, never in production)
+app.config["RATELIMIT_ENABLED"] = os.getenv("RATELIMIT_ENABLED", "true").lower() != "false"
 limiter.init_app(app)
 
 # Add all endpoints form the API with a "api" prefix

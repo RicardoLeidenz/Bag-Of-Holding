@@ -37,7 +37,7 @@ Bag of Holding provides players with a complete toolkit for managing their adven
 
 Follow these steps to run the project locally.
 
-**Requirements:** Python 3.13, [Pipenv](https://pipenv.pypa.io/), Node.js 20+. PostgreSQL is optional locally — without `DATABASE_URL` the backend uses SQLite.
+**Requirements:** Python 3.13, [Pipenv](https://pipenv.pypa.io/), Node.js 20+. PostgreSQL is recommended (see below); without `DATABASE_URL` the backend falls back to SQLite.
 
 ### 1. Clone the repository
 ```bash
@@ -63,6 +63,32 @@ In a second terminal, from the project root:
 npm install
 npm run dev          # app on http://localhost:3000
 ```
+
+### Using PostgreSQL locally (recommended — production uses it)
+On macOS with [Homebrew](https://brew.sh/):
+```bash
+brew install postgresql@17
+brew services start postgresql@17      # runs in the background and at login
+createdb bag_of_holding                # development database
+createdb bag_of_holding_test           # separate database for tests
+```
+Then in `.env`: `DATABASE_URL=postgresql://<your-mac-username>@localhost:5432/bag_of_holding`, and run `pipenv run upgrade`.
+
+### Running the tests
+**Backend** (fast, uses an in-memory SQLite database by default):
+```bash
+pipenv run test
+# against PostgreSQL instead (tables in the test database are wiped after each test):
+TEST_DATABASE_URL=postgresql://<your-mac-username>@localhost:5432/bag_of_holding_test pipenv run test
+```
+
+**Browser end-to-end tests** (need Google Chrome installed). Start the API with rate limiting off so repeated runs aren't blocked, start the frontend, then run the suite:
+```bash
+RATELIMIT_ENABLED=false pipenv run start   # terminal 1
+npm run dev                                # terminal 2
+npm run test:e2e                           # terminal 3
+```
+The suite launches its own hidden Chrome with a temporary profile and creates its own test user.
 
 ### Usage
 Once both servers are running, you can register a new account or log in as an existing user. From there, you can:

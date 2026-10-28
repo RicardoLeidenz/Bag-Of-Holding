@@ -2,7 +2,8 @@ import os
 
 # Configure the app for testing before it is imported (app.py reads these at import time).
 # This overrides values pipenv loads from .env, so tests never touch the development database.
-os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+# Set TEST_DATABASE_URL to run against a dedicated PostgreSQL test database (its tables are dropped after each test).
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
 os.environ["JWT_SECRET_KEY"] = "test-secret-key-that-is-long-enough-for-hs256"
 os.environ["FLASK_DEBUG"] = "1"
 

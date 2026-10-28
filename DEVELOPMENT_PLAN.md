@@ -36,7 +36,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
-**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ · 1.5 ✅ · 1.6 ✅ · 1.7 ✅ (51 pytest tests + 50 headless-Chrome checks, part of 1.9)
+**Progress:** Priority 1 complete ✅ — 1.1–1.9 done. 53 pytest tests (pass on SQLite and PostgreSQL 17) + 47 browser checks (`npm run test:e2e`).
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
@@ -94,7 +94,7 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 
 | Finding | Status |
 |---|---|
-| Squashed migration builds a fresh DB | **Verified** on SQLite (Postgres still to check) |
+| Squashed migration builds a fresh DB | **Verified** on SQLite and PostgreSQL 17.11; `flask db check` finds no drift from the models |
 | `GET /api/user` lists all users + characters with no token | **Verified** → fixed in 1.2 (route removed) |
 | Any user's characters readable/editable with no token (`/user/<id>/characters`, `PUT /character`, `PUT /stat`) | **Verified** → fixed in 1.2 (tests in `tests/test_authorization.py`) |
 | `/admin/` open | **Verified** (HTTP 200) → fixed in 1.3 (development only) |
@@ -102,7 +102,7 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 | `/api/verify_token` → 500 `NameError` | **Verified** → fixed in 1.2 (replaced by `GET /api/me`) |
 | Integer JWT identity can't be decoded (jwt-extended 4.7.1) | **Verified** → fixed in 1.2 (identity is `str(user.id)`) |
 | Duplicate signup rejected | Verified, returned 401 → fixed in 1.4 (409) |
-| Over-length names → DB error | **Not reproduced** on SQLite (doesn't enforce lengths); expected on Postgres |
+| Over-length names → DB error | Prevented by 1.4 validation; length tests pass on PostgreSQL |
 | `npm run build` | **Passes** |
 | `npm run lint` | Was broken (invalid `.eslintrc`). Fixed in 1.1 → now reports 77 problems (18 errors, 59 warnings), cleaned up in 2.5 |
 | `npm audit` | 17 → 4 after `npm audit fix` in 1.1 (no major upgrades). Remaining 4 need major upgrades → P3.4 |

@@ -149,3 +149,22 @@ def test_admin_disabled_in_production():
 
 def test_admin_enabled_in_development(app):
     assert any(r.rule.startswith("/admin") for r in app.url_map.iter_rules())
+
+
+###### RATE LIMIT SWITCH ######
+
+def _limiter_enabled(extra_env):
+    env = {**os.environ, "FLASK_DEBUG": "1", "JWT_SECRET_KEY": "x" * 32,
+           "DATABASE_URL": "sqlite:///:memory:", **extra_env}
+    env.pop("RATELIMIT_ENABLED", None) if "RATELIMIT_ENABLED" not in extra_env else None
+    code = "from app import app; from api.utils import limiter; print(limiter.enabled)"
+    result = subprocess.run([sys.executable, "-c", code], cwd="src", env=env, capture_output=True, text=True)
+    return result.stdout.strip().splitlines()[-1]
+
+
+def test_rate_limiting_on_by_default():
+    assert _limiter_enabled({}) == "True"
+
+
+def test_rate_limiting_can_be_disabled_for_e2e_runs():
+    assert _limiter_enabled({"RATELIMIT_ENABLED": "false"}) == "False"
