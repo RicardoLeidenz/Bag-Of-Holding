@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import { apiFetch } from "../api.js";
 import "../../styles/characterSelection.css";
 
 export const CharacterSelection = () => {
     const { store, dispatch } = useGlobalReducer()
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [characterList, setCharacterList] = useState([]);
     const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ export const CharacterSelection = () => {
     }
 
     const getCharacters = async (user_id) => {
-        const response = await fetch(backendUrl + "api/user/" + user_id + "/characters");
+        const response = await apiFetch("api/characters");
         const data = await response.json();
         setCharacterList(data.characters);
     };

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import useGlobalReducer from "../../hooks/useGlobalReducer.jsx"
+import { apiFetch } from "../../api.js"
 import "../../../styles/login.css"
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL
 
 
 export default function InputForm() {
@@ -25,9 +24,8 @@ export default function InputForm() {
     e.preventDefault();
 
     const endpoint = mode == "login" ? "api/log_in" : "api/sign_up";
-    const response = await fetch(backendUrl + endpoint, {
+    const response = await apiFetch(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formInput),
     });
     console.log(response);

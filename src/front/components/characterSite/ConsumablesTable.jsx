@@ -1,9 +1,9 @@
 import { number } from "prop-types";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { useState } from "react";
+import { apiFetch } from "../../api.js";
 export const ConsumablesTable = (props) => {
     const { store, dispatch } = useGlobalReducer();
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [consumables, setConsumables] = useState(props.consumables)
     const [newConsumable, setNewConsumable] = useState("")
 
@@ -32,9 +32,8 @@ export const ConsumablesTable = (props) => {
     }
 
     const saveConsumable = async (name) => {
-        const response = await fetch(backendUrl + "api/consumable", {
+        const response = await apiFetch("api/consumable", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "name": name,
                 "character_id": props.character_id
@@ -46,9 +45,8 @@ export const ConsumablesTable = (props) => {
     };
 
     const updateBackend = async (amount, id) => {
-        const response = await fetch(backendUrl + "api/consumable", {
+        const response = await apiFetch("api/consumable", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "id": id,
                 "amount": amount
