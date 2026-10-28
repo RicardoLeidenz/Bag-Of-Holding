@@ -1,10 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom/dist"
+import { Outlet, useNavigate } from "react-router-dom"
 import ScrollToTop from "../components/ScrollToTop"
 import { Navbar } from "../components/Navbar"
 import { Footer } from "../components/Footer"
 import { useEffect } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { useNavigate } from "react-router-dom"
+import { SESSION_EXPIRED_EVENT } from "../api.js";
 
 // Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
 //FETCH REQUEST FOR CLASS AND RUN THROUGH A USEEFFECT UPON MOUNT
@@ -87,6 +87,16 @@ export const Layout = () => {
         getClasses(store.apiURL + "/classes");
         getSubClasses(store.apiURL + "/subclasses");
         getSpells(store.apiURL + "/spells");
+    }, [])
+
+    // When the server rejects our login token (expired or invalid), log out and go to the login page
+    useEffect(() => {
+        const handleExpired = () => {
+            dispatch({ type: "log_out" });
+            navigate("/");
+        };
+        window.addEventListener(SESSION_EXPIRED_EVENT, handleExpired);
+        return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleExpired);
     }, [])
     return (
         <ScrollToTop>

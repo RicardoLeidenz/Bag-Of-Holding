@@ -1,23 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { clearSession } from "../api.js";
 
 export const Navbar = () => {
-	let token = localStorage.getItem("token");
+	const { store, dispatch } = useGlobalReducer();
+	const navigate = useNavigate();
+	const token = store.token;
+	const currentCharacterId = store.characterInfo.id;
+
 	const logOut = () => {
-		localStorage.removeItem("token")
-		localStorage.removeItem("user_id")
-		localStorage.removeItem("character_id")
+		clearSession();
+		dispatch({ type: "log_out" });
+		navigate("/");
 	}
 	return (
 		<nav className="navbar header-secondary">
-			{
-				token
-					? <Link to="/characterselection">
-						<span className="navbar-brand mb-0 h1 accent">BAG OF HOLDING</span>
-					</Link>
-					: <Link to="/">
-						<span className="navbar-brand mb-0 h1 accent">BAG OF HOLDING</span>
-					</Link>
-			}
+			<Link to={token ? "/characterselection" : "/"}>
+				<span className="navbar-brand mb-0 h1 accent">BAG OF HOLDING</span>
+			</Link>
 
 			<div className="ml-auto">
 				{
@@ -29,20 +29,22 @@ export const Navbar = () => {
 							<Link to="/charactercreator">
 								<button className="accent btn btn-primary navbar-button">Character Creator</button>
 							</Link>
-							<Link to="/character">
-								<button className="accent btn btn-primary navbar-button">Character Site</button>
-							</Link>
+							{
+								currentCharacterId
+									? <Link to={"/character/" + currentCharacterId}>
+										<button className="accent btn btn-primary navbar-button">Character Site</button>
+									</Link>
+									: ""
+							}
 							<Link to="/spells">
 								<button className="accent btn btn-primary navbar-button">Spells</button>
 							</Link>
-							<Link to="/">
-								<button
-									className="accent btn btn-primary navbar-button"
-									onClick={logOut}
-								>
-									Log Out
-								</button>
-							</Link>
+							<button
+								className="accent btn btn-primary navbar-button"
+								onClick={logOut}
+							>
+								Log Out
+							</button>
 						</span>
 						: ""
 				}

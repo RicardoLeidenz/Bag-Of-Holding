@@ -3,37 +3,40 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Navigate,
   Route,
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Character } from "./pages/Character";
 import { SpellList } from "./pages/SpellList";
-import InputForm from "./components/signUpLogIn/SignUpLogInInterface.jsx";
 import { CharacterCreator } from "./pages/CharacterCreator";
 import { EquipmentDisplay } from "./components/Equipment.jsx";
 import { CharacterSelection } from "./pages/CharacterSelection.jsx";
+import { NotFound } from "./pages/NotFound.jsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
+    // Root Route: every page shares the Layout (navbar + footer)
+    <Route path="/" element={<Layout />} errorElement={<NotFound />} >
 
-    // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
+      {/* Public pages */}
       <Route path="/" element={<Home />} />
-      <Route path="/character" element={<Character />} />
+      <Route path="/login" element={<Home />} />
       <Route path="/spells" element={<SpellList />} />
-      <Route path="/login" element={<InputForm />} />
-      <Route path="/charactercreator" element={<CharacterCreator />} />
       <Route path="/equipment" element={<EquipmentDisplay />} />
-      <Route path="/characterselection" element={<CharacterSelection />} />
+
+      {/* Pages that need a logged-in user */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/characterselection" element={<CharacterSelection />} />
+        <Route path="/charactercreator" element={<CharacterCreator />} />
+        <Route path="/character/:id" element={<Character />} />
+        <Route path="/character" element={<Navigate to="/characterselection" replace />} />
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
     </Route>
   )
 );

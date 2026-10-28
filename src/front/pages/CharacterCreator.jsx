@@ -39,11 +39,7 @@ export const CharacterCreator = () => {
                 alert(data.error || "Could not create character");
                 return;
             }
-            dispatch({
-                type: "select_character",
-                payload: data.character
-            });
-            navigate("/character");
+            navigate("/character/" + data.character.id);
         }
         else {
             setsShowAlert(true);

@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+from datetime import timedelta
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from werkzeug.exceptions import HTTPException
@@ -35,6 +36,8 @@ if not jwt_secret:
     jwt_secret = "dev-only-insecure-jwt-key"
     print("WARNING: JWT_SECRET_KEY not set, using an insecure development key")
 app.config["JWT_SECRET_KEY"] = jwt_secret
+# How long a login lasts before the user must log in again (long enough for a game session)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 jwt = JWTManager(app)
 
 

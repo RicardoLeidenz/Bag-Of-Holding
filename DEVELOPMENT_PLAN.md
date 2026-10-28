@@ -36,7 +36,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
-**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ (49 pytest tests so far, part of 1.9) · from 1.7: Hit Dice prop fixed
+**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ · 1.5 ✅ · 1.6 ✅ (51 pytest tests + a 26-step headless-Chrome flow, part of 1.9) · from 1.7: Hit Dice prop fixed, sheet remounts per character
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
@@ -54,7 +54,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 - `SkillsTable.jsx:47` uses the wrong ability (`pair[0]` should be `pair[1]`).
 - ~~`Character.jsx:43` passes HP into the Hit Dice field.~~ Fixed early in 1.4 (validation would otherwise reject saves).
 - The `state` → `store` typos in `store.js`.
-- Props copied into local state go stale; fix by keying components on the character id.
+- ~~Props copied into local state go stale; fix by keying components on the character id.~~ Done in 1.6 (sheet keyed on character id, only rendered once loaded).
 - `ConsumablesTable` makes POST calls inside a setState updater and drops the new consumable's id.
 - `StatBlock` saves on every keystroke; switch to saving on blur, with NaN guards.
 - The subclass list isn't filtered by class; use `/classes/{index}/subclasses`.
@@ -106,4 +106,6 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 | `npm run lint` | Was broken (invalid `.eslintrc`). Fixed in 1.1 → now reports 77 problems (18 errors, 59 warnings), cleaned up in 2.5 |
 | `npm audit` | 17 → 4 after `npm audit fix` in 1.1 (no major upgrades). Remaining 4 need major upgrades → P3.4 |
 | `store.js` undefined `state` | **Verified** by ESLint (8 × `no-undef`) |
+| Character page loses data on refresh | **Verified** fixed in 1.6 (headless Chrome: reload keeps the sheet) |
+| Access tokens expired after 15 min (library default) | Found in 1.6 → now 12 h (`JWT_ACCESS_TOKEN_EXPIRES`) |
 | Other frontend bugs (task 1.7 list) | From code reading; verify in browser during 1.7 |

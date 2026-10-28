@@ -1,43 +1,25 @@
 import { useState, useEffect } from "react"
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api.js";
 import "../../styles/characterSelection.css";
 
 export const CharacterSelection = () => {
-    const { store, dispatch } = useGlobalReducer()
     const [characterList, setCharacterList] = useState([]);
     const navigate = useNavigate();
 
-    const checkToken = () => {
-        let token = localStorage.getItem("token");
-        let user_id = localStorage.getItem("user_id");
-        if (token && user_id) {
-            getCharacters(user_id);
-        }
-        else {
-            navigate("/");
-        }
-
-    }
-
-    const getCharacters = async (user_id) => {
+    const getCharacters = async () => {
         const response = await apiFetch("api/characters");
-        const data = await response.json();
-        setCharacterList(data.characters);
+        if (response.ok) {
+            const data = await response.json();
+            setCharacterList(data.characters);
+        }
     };
     const chooseCharacter = (character) => {
-        dispatch({
-            type: "select_character",
-            payload: character
-        });
-        console.log(character)
-        localStorage.setItem("character_id", character.id)
-        navigate("/character");
+        navigate("/character/" + character.id);
     }
 
     useEffect(() => {
-        checkToken();
+        getCharacters();
     }, [])
 
     return (

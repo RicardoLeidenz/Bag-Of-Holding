@@ -48,7 +48,7 @@ cd Bag-Of-Holding
 ```bash
 cp .env.example .env
 ```
-Then edit `.env`: set `VITE_BACKEND_URL=http://localhost:3001/` (keep the trailing slash), choose a `DATABASE_URL` (or delete the line to use SQLite), and replace the placeholder secrets.
+Then edit `.env`: choose a `DATABASE_URL` (or delete the line to use SQLite) and replace the placeholder secrets. During development the frontend forwards `/api` requests to the backend automatically.
 
 ### 3. Set up the backend
 From the project root:

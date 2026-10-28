@@ -1,6 +1,7 @@
+import { getToken } from "./api.js";
+
 export const initialStore = () => {
   return {
-    user_id: null,
     characterInfo: {},
     races: [],
     classes: [],
@@ -13,7 +14,8 @@ export const initialStore = () => {
     characters: [],
     loading: false,
     error: null,
-    token: null,
+    // Restore the login saved in the browser, so a page refresh keeps the user logged in
+    token: getToken(),
     apiURL: "https://www.dnd5eapi.co/api/2014",
   };
 };
@@ -43,12 +45,17 @@ export default function storeReducer(store, action = {}) {
         ...store,
         spells: action.payload,
       };
-    case "SET_TOKEN":
-      const { token, user_id } = action.payload;
+    case "log_in":
       return {
         ...store,
-        token: token,
-        user_id: user_id,
+        token: action.payload.token,
+      };
+
+    case "log_out":
+      return {
+        ...store,
+        token: null,
+        characterInfo: {},
       };
 
     case "select_character":

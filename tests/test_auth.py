@@ -34,3 +34,19 @@ def test_user_list_endpoint_removed(client, make_user):
     response = client.get("/api/user")
     # Falls through to the SPA catch-all or 404, but must not return user data
     assert b"alice@test.com" not in response.data
+
+
+def test_token_lasts_12_hours(app, client, make_user):
+    _, headers = make_user()
+    claims = decode_token(headers["Authorization"].split(" ")[1])
+    assert claims["exp"] - claims["iat"] == 12 * 60 * 60
+
+
+def test_expired_token_is_json_401(app, client, make_user):
+    from datetime import timedelta
+    from flask_jwt_extended import create_access_token
+    user_id, _ = make_user()
+    expired = create_access_token(identity=str(user_id), expires_delta=timedelta(seconds=-1))
+    response = client.get("/api/me", headers={"Authorization": "Bearer " + expired})
+    assert response.status_code == 401
+    assert "expired" in response.get_json()["error"].lower()

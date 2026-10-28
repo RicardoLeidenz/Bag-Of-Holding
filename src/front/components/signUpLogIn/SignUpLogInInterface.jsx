@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import useGlobalReducer from "../../hooks/useGlobalReducer.jsx"
-import { apiFetch } from "../../api.js"
+import { apiFetch, saveSession } from "../../api.js"
 import "../../../styles/login.css"
 
 
@@ -34,15 +34,8 @@ export default function InputForm() {
 
     if (response.ok) {
       if (mode === "login") {
-        dispatch({
-          type: "SET_TOKEN",
-          payload: {
-            token: data.token,
-            user_id: data.user.id
-          }
-        });
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("user_id", data.user.id)
+        saveSession(data.token);
+        dispatch({ type: "log_in", payload: { token: data.token } });
         navigate("/characterselection");
       }
       setMode("login");
