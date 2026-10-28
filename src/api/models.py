@@ -122,7 +122,8 @@ class Character(db.Model):
     hitDice: Mapped[str] = mapped_column(String(5), default="")
     speed: Mapped[int] = mapped_column(Integer, default=0)
     initiative: Mapped[int] = mapped_column(Integer, default=0)
-    proficiency: Mapped[int] = mapped_column(Integer, default=0)
+    # Proficiency bonus; +2 is the 5e value for a level 1 character
+    proficiency: Mapped[int] = mapped_column(Integer, default=2)
 
     user = relationship("User", back_populates="characters")
 

@@ -50,6 +50,31 @@ export async function run(b, { token }) {
     check("save: proficient DEX save is 7", await waitFor(`${saveToggle}.getAttribute("aria-label").endsWith(": proficient")`) && (await dexSave()) === "7", await dexSave());
     check("save: proficiency saved", (await load()).stats.find(s => s.name === "DEX").proficient === true);
 
+    // A brand-new character (proficiency +2, all scores 10) gets the bonuses applied:
+    // proficient skill +2, expertise +4, proficient save +2, Perception proficiency raises Passive Perception
+    const fresh = await createCharacter(token, "Fresh");
+    check("new character: proficiency is 2", fresh.proficiency === 2, fresh.proficiency);
+    await goto("/character/" + fresh.id);
+    await waitFor(`document.querySelector("#name")?.value === "Fresh"`);
+    const freshProficiency = await evaluate(`[...document.querySelectorAll(".stat-block-box")].find(x => x.innerText.includes("PROFICIENCY")).querySelector("input").value`);
+    check("new character: sheet shows proficiency 2", freshProficiency === "2", freshProficiency);
+    const skillValue = name => evaluate(`(() => { const td = [...document.querySelectorAll("td")]; const i = td.findIndex(t => t.innerText.includes("${name} (")); return i === -1 ? "skill not found" : td[i + 1]?.innerText.trim(); })()`);
+    const skillToggle = name => `document.querySelector('button[aria-label^="${name}:"]')`;
+    const passiveValue = () => evaluate(`[...document.querySelectorAll(".stat-block-box")].find(x => x.innerText.includes("PASSIVE PER")).innerText.replace("PASSIVE PER", "").trim()`);
+    check("bonus: Athletics starts at +0", (await skillValue("ATHLETICS")) === "0", await skillValue("ATHLETICS"));
+    await evaluate(`${skillToggle("ATHLETICS")}.click(), true`);
+    check("bonus: proficient Athletics is +2", await waitFor(`(() => { const td = [...document.querySelectorAll("td")]; const i = td.findIndex(t => t.innerText.includes("ATHLETICS (")); return td[i + 1]?.innerText.trim() === "2"; })()`), await skillValue("ATHLETICS"));
+    await evaluate(`${skillToggle("ATHLETICS")}.click(), true`);
+    check("bonus: expertise Athletics is +4", await waitFor(`(() => { const td = [...document.querySelectorAll("td")]; const i = td.findIndex(t => t.innerText.includes("ATHLETICS (")); return td[i + 1]?.innerText.trim() === "4"; })()`), await skillValue("ATHLETICS"));
+    check("bonus: Passive Perception starts at 10", (await passiveValue()) === "10", await passiveValue());
+    await evaluate(`${skillToggle("PERCEPTION")}.click(), true`);
+    check("bonus: proficient Perception gives Passive Perception 12", await waitFor(`[...document.querySelectorAll(".stat-block-box")].find(x => x.innerText.includes("PASSIVE PER")).innerText.replace("PASSIVE PER", "").trim() === "12"`), await passiveValue());
+    const strSave = () => evaluate(`[...[...document.querySelectorAll(".stat-block-box")].find(x => x.querySelector("h4")?.innerText === "STR").querySelectorAll(".text-center")].find(d => d.innerText.includes("SAV")).querySelector("h4").innerText`);
+    await evaluate(`document.querySelector('button[aria-label^="STR saving throw"]').click(), true`);
+    check("bonus: proficient STR save is +2", await waitFor(`document.querySelector('button[aria-label^="STR saving throw"]').getAttribute("aria-label").endsWith(": proficient")`) && (await strSave()) === "2", await strSave());
+    await goto("/character/" + character.id);
+    await waitFor(`document.querySelector("#name")?.value === "Renamed"`);
+
     // Delete: Cancel keeps the character
     await clickText("button", "Delete character");
     check("delete: asks for confirmation", await waitFor(`document.body.innerText.includes("Really delete Renamed?")`));

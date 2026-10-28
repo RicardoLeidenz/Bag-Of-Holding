@@ -91,3 +91,9 @@ def test_lists_keep_a_stable_order_after_updates(client, make_user, make_charact
     for field in ["skills", "stats", "consumables"]:
         ids = [item["id"] for item in reloaded[field]]
         assert ids == sorted(ids), field
+
+
+def test_new_character_starts_with_level_1_proficiency(client, make_user, make_character):
+    _, headers = make_user()
+    character = make_character(headers)
+    assert (character["level"], character["proficiency"]) == (1, 2)

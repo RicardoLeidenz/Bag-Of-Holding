@@ -74,7 +74,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 **Launch = Priority 1 + Priority 2.**
 
 **2.1 notes:** done — rename, skill proficiency/expertise toggle (●/★), saving-throw toggle, delete with inline confirmation on the sheet. Found and fixed: skills/stats/consumables/characters had no defined order, so PostgreSQL moved edited rows to the end of the list. 65 pytest tests (SQLite + PostgreSQL), 67 browser checks.
-**Seen in screenshots, for 2.2/2.3:** dice-button labels overflow their boxes; `input:focus { outline: none }` hides keyboard focus; new characters start with proficiency +0 (5e level 1 is +2).
+**Seen in screenshots, for 2.2/2.3:** dice-button labels overflow their boxes; `input:focus { outline: none }` hides keyboard focus. ~~New characters started with proficiency +0~~ → now +2 (5e level 1).
 
 ## Priority 3 — Post-launch
 1. **Inventory (first):** Item/CharacterItem API, item catalog (dnd5eapi equipment plus custom items), quantity and equip toggle, a real UI replacing `item.js`. Remove the dead `Inventory.jsx`/`Bag.jsx`.
