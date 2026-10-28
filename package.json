@@ -1,11 +1,10 @@
 {
-  "name": "react-hello-webapp",
+  "name": "bag-of-holding",
   "engines": {
     "node": ">=20.0.0"
   },
-  "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Bag of Holding: a D&D 5e character manager",
   "scripts": {
     "dev": "vite",
     "start": "vite",
@@ -16,19 +15,9 @@
     "e2e:app": "VITE_BACKEND_URL= API_PROXY_TARGET=http://localhost:3101 vite --port 3100 --strictPort"
   },
   "author": {
-    "name": "Alejandro Sanchez",
-    "url": "http://alesanchezr.com/"
+    "name": "Ricardo Leidenz",
+    "url": "https://github.com/RicardoLeidenz"
   },
-  "contributors": [
-    {
-      "name": "Alejandro Sanchez",
-      "url": "http://alesanchezr.com/"
-    },
-    {
-      "name": "Ignacio Cordoba",
-      "url": "http://github.com/nachovz"
-    }
-  ],
   "license": "ISC",
   "devDependencies": {
     "@types/react": "^18.2.18",

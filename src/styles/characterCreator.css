@@ -1,10 +1,10 @@
 .input-field {
   width: min(100%, 20rem);
   margin-inline: 5px;
-  background-color: whitesmoke;
-  color: #008080;
+  background-color: var(--boh-surface);
+  color: var(--boh-teal-text);
   border-style: solid;
-  border-color: #40202c;
+  border-color: var(--boh-plum);
   border-width: 5px;
   min-height: 2.75rem;
   font-size: x-large;

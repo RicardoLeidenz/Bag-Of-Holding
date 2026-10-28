@@ -8,7 +8,7 @@ export const CharacterInfoBlock = (props) => {
         //  ALL THIS INFORMATION IS SUPPOSED TO BE SELECTED USING THE DND API WITH ALL CHARACTER OPTIONS
         <div>
             {/* CHARACTER PICTURE */}
-            <img src="https://i.pinimg.com/236x/aa/00/72/aa0072133c6bb0e1d968052509292a89.jpg" className="character-picture m-3" alt="Character portrait"></img>
+            <img src="/avatar-placeholder.svg" className="character-picture m-3" alt="Character portrait placeholder" width="200" height="200" />
 
             {/* CHARACTER NAME */}
             <div className="character-info-box m-3">

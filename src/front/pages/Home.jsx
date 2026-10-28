@@ -11,6 +11,13 @@ export const Home = () => {
 
 	return (
 		<div className="home-container">
+			<header className="brand-hero">
+				<img src="/logo.svg" alt="" />
+				<div>
+					<h1 className="brand-wordmark">BAG OF HOLDING</h1>
+					<p className="brand-tagline">MANAGE · EXPLORE · ADVENTURE</p>
+				</div>
+			</header>
 			<InputForm />
 		</div>
 	);

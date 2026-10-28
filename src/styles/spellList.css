@@ -1,6 +1,6 @@
 .spell-name {
   border-bottom: solid;
-  border-color: #bfb699;
+  border-color: var(--boh-beige);
   border-width: 15px;
 }
 /* Spell levels: as many boxes per row as fit the screen */
@@ -13,20 +13,27 @@
   max-height: 14rem;
   overflow-y: auto;
 }
+/* Level headings ("CANTRIPS", "LEVEL 1") in the heading font, sized for the narrow boxes */
+.spells-box h2 {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.2rem;
+  margin: 0.4rem auto;
+}
 .spell-option {
+  overflow-wrap: anywhere;
   display: block;
   width: 100%;
   min-height: 2.5rem;
   background: transparent;
   border: none;
-  border-bottom: 1px solid whitesmoke;
-  color: whitesmoke;
+  border-bottom: 1px solid var(--boh-surface);
+  color: var(--boh-surface);
   font-size: 1.1rem;
   padding: 0.3rem;
 }
 .spell-option:hover,
 .spell-option:focus-visible {
-  background-color: #a8474f;
+  background-color: var(--boh-red-secondary);
 }
 /* Details stay in view while scrolling the list on large screens */
 @media (min-width: 992px) {
@@ -36,21 +43,16 @@
   }
 }
 .spell-information-box {
-  background-color: whitesmoke;
-  color: #008080;
+  background-color: var(--boh-surface);
+  color: var(--boh-teal-text);
   border-style: solid;
-  border-color: #bfb699;
+  border-color: var(--boh-beige);
   border-width: 5px;
   max-height: 20rem;
   overflow-y: auto;
   font-size: large;
 }
 .close-button {
-  background-color: whitesmoke;
-  color: #008080;
-  border-style: solid;
-  border-color: #bfb699;
-  border-width: 5px;
   font-size: larger;
   min-height: 2.75rem;
 }

@@ -1,7 +1,7 @@
 export const Footer = () => (
-	<footer className="footer header-secondary mt-5 py-3 text-center accent">
-		<p>
-			Made with <i className="fa fa-heart text-danger" /> by{" Ricardo, Lilith, & Sean"}
+	<footer className="footer header-secondary py-3 text-center accent">
+		<p className="mb-0">
+			Made with <span className="text-danger" aria-label="love">♥</span> by Ricardo Leidenz
 		</p>
 	</footer>
 );

@@ -1,18 +1,18 @@
 /* CHARACTER INFO PAGE SPECIFIC */
 .character-info-box {
-  background-color: whitesmoke;
-  color: #008080;
-  border: 5px solid #008080;
+  background-color: var(--boh-surface);
+  color: var(--boh-teal-text);
+  border: 5px solid var(--boh-teal);
 }
 .character-picture {
-  border: 5px solid #008080;
+  border: 5px solid var(--boh-teal);
   border-radius: 15px 50px;
   max-width: calc(100% - 2rem);
   height: auto;
 }
 .character-info-input {
   background-color: transparent;
-  color: #008080;
+  color: var(--boh-teal-text);
   text-align: center;
   border: none;
   width: 100%;
@@ -23,8 +23,8 @@ label {
 }
 /* STAT SPECIFIC */
 .stat-block-box {
-  background-color: #bfb699;
-  border: 5px solid #008080;
+  background-color: var(--boh-beige);
+  border: 5px solid var(--boh-teal);
 }
 .stat-block-box h4 {
   font-size: 1.1rem;
@@ -41,9 +41,9 @@ label {
   }
 }
 .stat-block-info {
-  background-color: whitesmoke;
-  color: #008080;
-  border: 2px solid #008080;
+  background-color: var(--boh-surface);
+  color: var(--boh-teal-text);
+  border: 2px solid var(--boh-teal);
   width: 90%;
   text-align: center;
   margin: 5px;
@@ -63,10 +63,6 @@ label {
   padding: 0.5rem;
 }
 .dice-block {
-  background-color: whitesmoke;
-  border: 5px solid #008080;
-  border-radius: 25%;
-  color: #008080;
   aspect-ratio: 1 / 1;
   width: 100%;
   padding: 0;
@@ -75,47 +71,49 @@ label {
   font-size: 1.15rem;
   margin: 0;
 }
+/* Phones: two rows of three dice, so the labels fit and the buttons are easy to tap */
+@media (max-width: 575.98px) {
+  .dice-box {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 16rem;
+    margin: auto;
+  }
+}
 /* CONSMABLE TABLE SPECIFIC */
 .consumableCount {
   background-color: transparent;
   text-align: center;
-  color: #008080;
+  color: var(--boh-teal-text);
   border: none;
   width: 100%;
   font-size: larger;
 }
 .addConsumableButton {
-  background-color: whitesmoke;
-  border: 5px solid #008080;
-  color: #008080;
   margin: 5px;
   width: 25%;
 }
 .modal-header {
-  background-color: #8c373e;
-  color: whitesmoke;
+  background-color: var(--boh-red);
+  color: var(--boh-surface);
   padding: 5%;
 }
 .modal-body {
-  background-color: #bfb699;
+  background-color: var(--boh-beige);
   font-size: larger;
 }
 .modal-footer {
-  background-color: #8c373e;
-  color: whitesmoke;
+  background-color: var(--boh-red);
+  color: var(--boh-surface);
   padding: 5%;
 }
 .close-modal-btn {
-  background-color: whitesmoke;
-  border: 5px solid #008080;
-  color: #8c373e;
   margin: 5px;
   width: 25%;
 }
 
 .new-consumable-input {
-  background-color: whitesmoke;
-  color: #008080;
+  background-color: var(--boh-surface);
+  color: var(--boh-teal-text);
   text-align: center;
   border: none;
   width: 100%;
@@ -123,12 +121,12 @@ label {
 }
 table {
   text-align: left;
-  background-color: whitesmoke;
-  border: 5px solid #008080;
-  color: #008080;
+  background-color: var(--boh-surface);
+  border: 5px solid var(--boh-teal);
+  color: var(--boh-teal-text);
 }
 th {
-  border: 5px solid #008080;
+  border: 5px solid var(--boh-teal);
 }
 /* PROFICIENCY TOGGLES (skills and saving throws) */
 .proficiency-toggle {
@@ -145,7 +143,7 @@ th {
   cursor: pointer;
 }
 .proficiency-toggle:focus-visible {
-  outline: 2px solid #008080;
+  outline: 2px solid var(--boh-teal);
   border-radius: 3px;
 }
 /* DELETE CHARACTER */
@@ -169,9 +167,9 @@ th {
 }
 .cancel-delete-button {
   background: transparent;
-  border: 1px solid whitesmoke;
+  border: 1px solid var(--boh-surface);
   border-radius: 4px;
-  color: whitesmoke;
+  color: var(--boh-surface);
   font-size: 0.85rem;
   padding: 0.25rem 0.6rem;
   margin: 0.25rem;

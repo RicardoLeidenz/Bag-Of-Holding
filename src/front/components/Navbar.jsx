@@ -24,7 +24,8 @@ export const Navbar = () => {
 	}
 	return (
 		<nav className="navbar navbar-expand-lg header-secondary px-3">
-			<Link to={token ? "/characterselection" : "/"} className="navbar-brand mb-0 h1 accent">
+			<Link to={token ? "/characterselection" : "/"} className="navbar-brand mb-0 accent">
+				<img src="/logo.svg" alt="" className="navbar-logo" />
 				BAG OF HOLDING
 			</Link>
 			{

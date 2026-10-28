@@ -1,16 +1,162 @@
+/* BRAND (see docs/brand/brand-guide.png) */
+:root {
+  --boh-red: #8B3A3A;           /* Primary Red */
+  --boh-plum: #3A1F2B;          /* Dark Plum */
+  --boh-beige: #C8C1A4;         /* Background Beige */
+  --boh-teal: #008080;          /* Accent Teal */
+  --boh-text: #1A1A1A;          /* Text Primary */
+  --boh-surface: #F3EED9;       /* Surface Light */
+  --boh-red-secondary: #6C3A3F; /* Secondary Red */
+  --boh-teal-light: #5AA6A3;    /* Accent Light */
+  --boh-beige-dark: #B3AB8C;    /* Hover shade of the beige (not in the guide) */
+  /* Not in the guide: darker teals so small text meets WCAG AA contrast (4.5:1).
+     The brand teal above is still used for borders, fills and large elements. */
+  --boh-teal-text: #005959;     /* teal text on beige or surface backgrounds */
+  --boh-teal-button: #006B6B;   /* teal button fill behind light text */
+
+  /* Headings / UI titles, labels / buttons / navigation, body text */
+  --font-heading: "Press Start 2P", ui-monospace, monospace;
+  --font-ui: "Pixelify Sans", ui-monospace, monospace;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
 /* GENERAL SITE */
 body {
-  background-color: #40202c;
+  background-color: var(--boh-plum);
+  font-family: var(--font-body);
+}
+/* Keep the footer at the bottom of the screen on short pages */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.footer {
+  margin-top: auto;
+}
+
+/* TYPOGRAPHY */
+h1, h2, h3,
+.navbar-brand,
+.login-label,
+.modal-title {
+  font-family: var(--font-heading);
+  font-weight: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+h1 { font-size: 1.35rem; }
+h2 { font-size: 1.1rem; }
+h3 { font-size: 1rem; }
+button,
+.btn,
+label,
+th,
+td,
+.input-selector,
+.input-selection,
+.stat-block-box,
+.character-info-box,
+.character-info-input,
+.footer {
+  font-family: var(--font-ui);
+}
+
+/* BUTTONS: the guide's pixel style (plum outline, inner bevel, small drop shadow) */
+.submit-button,
+.save-button,
+.input-selector,
+.input-selection,
+.addConsumableButton,
+.close-button,
+.close-modal-btn,
+.dice-block {
+  border: 3px solid var(--boh-plum);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35), 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+/* Primary: red */
+.submit-button {
+  background-color: var(--boh-red);
+  color: var(--boh-surface);
+}
+/* Secondary: beige */
+.input-selector,
+.input-selection,
+.close-button,
+.close-modal-btn {
+  background-color: var(--boh-beige);
+  color: var(--boh-plum);
+}
+.input-selection:hover,
+.input-selector:hover {
+  background-color: var(--boh-surface);
+}
+/* Accent: teal */
+.save-button,
+.addConsumableButton {
+  background-color: var(--boh-teal-button);
+  color: var(--boh-surface);
+}
+.save-button:hover,
+.addConsumableButton:hover {
+  background-color: var(--boh-teal);
+}
+.dice-block {
+  background-color: var(--boh-surface);
+  color: var(--boh-plum);
+}
+
+/* HOME: logo, wordmark and tagline above the login form */
+.brand-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem auto 0.5rem auto;
+  padding: 0 1rem;
+  text-align: left;
+}
+.brand-hero img {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+}
+.brand-wordmark {
+  color: var(--boh-beige);
+  font-size: 1.6rem;
+  margin: 0;
+}
+.brand-tagline {
+  color: var(--boh-teal-light);
+  font-family: var(--font-ui);
+  letter-spacing: 0.15em;
+  margin: 0.25rem 0 0 0;
+}
+@media (max-width: 575.98px) {
+  .brand-hero img { width: 64px; height: 64px; }
+  .brand-wordmark { font-size: 1.1rem; }
+  .brand-tagline { font-size: 0.8rem; }
+}
+.navbar-logo {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+  margin-right: 0.5rem;
+  vertical-align: -6px;
+}
+@media (max-width: 575.98px) {
+  .navbar-brand { font-size: 0.8rem; }
 }
 .header-primary {
-  background-color: #8c373e;
+  background-color: var(--boh-red);
 }
 .header-secondary {
-  background-color: #bfb699;
+  background-color: var(--boh-beige);
 }
 
 .accent {
-  color: #008080;
+  color: var(--boh-teal-text);
 }
 .col {
   text-align: center;
@@ -21,29 +167,29 @@ body {
   justify-content: center;
 }
 .info-box {
-  background-color: #8c373e;
+  background-color: var(--boh-red);
   border-style: solid;
-  border-color: #bfb699;
+  border-color: var(--boh-beige);
   border-width: 15px;
 }
 /* Login/Signup specific */
 .form-container {
-  background-color: #8c373e;
+  background-color: var(--boh-red);
   border-style: solid;
-  border-color: #bfb699;
+  border-color: var(--boh-beige);
   border-width: 15px;
 }
 
 .navbar-button {
   background-color: transparent;
   border-color: transparent;
-  color: #008080;
+  color: var(--boh-teal-text);
   font-weight: bold;
 }
 
 .navbar-button:hover {
-  background-color: #008080;
-  border-color: #8c373e;
+  background-color: var(--boh-teal);
+  border-color: var(--boh-red);
 }
 
 /* Another color we might use: #D9D9D9 (gray background on color pallette slide on Figma design) */
@@ -54,11 +200,6 @@ body {
   min-height: 2.75rem;
   padding: 0.35rem 0.9rem;
   margin: 0.25rem;
-  background-color: whitesmoke;
-  color: #008080;
-  border-style: solid;
-  border-color: #bfb699;
-  border-width: 5px;
   text-decoration: none;
 }
 .selector-tabs {
@@ -78,11 +219,6 @@ body {
 .input-selection {
   width: 100%;
   min-height: 4.5rem;
-  background-color: whitesmoke;
-  color: #008080;
-  border-style: solid;
-  border-color: #bfb699;
-  border-width: 5px;
   font-size: large;
   overflow-wrap: anywhere;
 }
@@ -103,9 +239,9 @@ body {
 /* NAVBAR */
 .navbar-toggler-custom {
   background: transparent;
-  border: 2px solid #008080;
+  border: 2px solid var(--boh-teal);
   border-radius: 6px;
-  color: #008080;
+  color: var(--boh-teal-text);
   font-size: 1.4rem;
   line-height: 1;
   padding: 0.3rem 0.6rem;
@@ -127,7 +263,7 @@ body {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 3px solid #bfb699;
+  border: 3px solid var(--boh-beige);
   color: white;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
@@ -163,7 +299,7 @@ body {
   color: #1e6b52;
 }
 .inline-message.info {
-  color: whitesmoke;
+  color: var(--boh-surface);
 }
 
 /* KEYBOARD FOCUS: gold ring with a dark edge, visible on every background used here */
@@ -171,7 +307,7 @@ body {
 .btn:focus-visible {
   outline: 3px solid #ffd166;
   outline-offset: 1px;
-  box-shadow: 0 0 0 5px #40202c;
+  box-shadow: 0 0 0 5px var(--boh-plum);
 }
 
 button:disabled {

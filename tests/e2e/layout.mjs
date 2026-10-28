@@ -26,6 +26,11 @@ export async function run(b, { token }) {
             await sleep(300);
             const extra = await overflow();
             check(`${device}: ${name} fits the screen`, extra <= 0, `${extra}px too wide`);
+            // Text that sticks out of its own box (e.g. a long word in a narrow heading)
+            const clipped = await evaluate(`[...document.querySelectorAll("h1, h2, h3, h4, h5, button, label, a, th")]
+                .filter(e => e.offsetParent !== null && e.scrollWidth > e.clientWidth + 1)
+                .map(e => e.tagName.toLowerCase() + ": " + e.innerText.trim().slice(0, 30))`);
+            check(`${device}: ${name} has no overflowing text`, clipped.length === 0, JSON.stringify(clipped));
         }
     }
 
