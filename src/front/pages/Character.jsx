@@ -49,7 +49,7 @@ export const Character = () => {
                             subClass={characterInfo.subClass}
                             hp={characterInfo.hp}
                             ac={characterInfo.ac}
-                            hitDice={characterInfo.hp}
+                            hitDice={characterInfo.hitDice}
                         />
                         : "Loading..."
                 }

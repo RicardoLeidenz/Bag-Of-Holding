@@ -35,6 +35,10 @@ export const CharacterCreator = () => {
             console.log(response);
             const data = await response.json();
             console.log(data);
+            if (!response.ok) {
+                alert(data.error || "Could not create character");
+                return;
+            }
             dispatch({
                 type: "select_character",
                 payload: data.character
