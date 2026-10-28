@@ -37,24 +37,32 @@ Bag of Holding provides players with a complete toolkit for managing their adven
 
 Follow these steps to run the project locally.
 
+**Requirements:** Python 3.13, [Pipenv](https://pipenv.pypa.io/), Node.js 20+. PostgreSQL is optional locally — without `DATABASE_URL` the backend uses SQLite.
+
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/bag-of-holding.git
-cd bag-of-holding
+git clone https://github.com/RicardoLeidenz/Bag-Of-Holding.git
+cd Bag-Of-Holding
 ```
-### 2. Set up the backend
-Navigate to the backend folder and start the server:
+### 2. Configure environment variables
 ```bash
-pipenv install
-pipenv run start
+cp .env.example .env
 ```
-### 3. Set up the frontend
-Navigate to the frontend folder and start the client:
+Then edit `.env`: set `VITE_BACKEND_URL=http://localhost:3001/` (keep the trailing slash), choose a `DATABASE_URL` (or delete the line to use SQLite), and replace the placeholder secrets.
+
+### 3. Set up the backend
+From the project root:
+```bash
+pipenv install --dev
+pipenv run upgrade   # create the database tables
+pipenv run start     # API on http://localhost:3001
+```
+### 4. Set up the frontend
+In a second terminal, from the project root:
 ```bash
 npm install
-npm run start
+npm run dev          # app on http://localhost:3000
 ```
-The frontend will typically run on http://localhost:3000 and the backend on http://localhost:5000.
 
 ### Usage
 Once both servers are running, you can register a new account or log in as an existing user. From there, you can:

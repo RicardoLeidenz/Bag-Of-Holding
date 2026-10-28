@@ -36,6 +36,8 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
+**Progress:** 1.1 ✅
+
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
 | 1.1 | **Dependency/config cleanup:** delete the stale `requirements.txt`, align Python 3.13 in `render.yaml` and the README, remove the broken `Dockerfile.render`, `public/bundle.js` and the babel block in `package.json`, fix the invalid `.eslintrc`, review `npm audit`, add `JWT_SECRET_KEY` to `.env.example` | Today's Render build would fail; stale files mislead | `requirements.txt`, `render.yaml`, `package.json`, `Dockerfile.render`, `public/`, `.env.example`, `README.md` | S | Fresh `pipenv install` and `npm run build` succeed |
@@ -74,7 +76,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 1. **Inventory (first):** Item/CharacterItem API, item catalog (dnd5eapi equipment plus custom items), quantity and equip toggle, a real UI replacing `item.js`. Remove the dead `Inventory.jsx`/`Bag.jsx`.
 2. **Password reset by email** (e.g. Resend free tier).
 3. **Spells per character:** known and prepared spells.
-4. **Tooling upgrades:** Vite 4→6, ESLint 9; frontend unit tests with Vitest.
+4. **Tooling upgrades:** Vite 4→latest (clears the dev-server-only esbuild advisory), React Router 6→7 (clears 2 moderate advisories that don't apply to this app: open redirect needs user-supplied link targets, the other is SSR-only), ESLint 9; frontend unit tests with Vitest.
 5. **Character portrait upload** (Cloudinary is already in the Pipfile).
 6. **Token hardening:** httpOnly cookie sessions or refresh tokens.
 
@@ -101,6 +103,7 @@ Checked 2026-10-28 on `finalize-project` (Python 3.13.5, Node 24, SQLite), by ca
 | Duplicate signup rejected | Verified, but returns 401 (should be 409) |
 | Over-length names → DB error | **Not reproduced** on SQLite (doesn't enforce lengths); expected on Postgres |
 | `npm run build` | **Passes** |
-| `npm run lint` | **Broken**: invalid rule in `.eslintrc` → added to task 1.1 |
-| `npm audit` | 17 vulnerabilities (13 high, mostly transitive dev deps, `@remix-run/router` is runtime) → review in task 1.1 |
-| Frontend bugs (task 1.7 list) | From code reading; verify in browser during 1.7 |
+| `npm run lint` | Was broken (invalid `.eslintrc`). Fixed in 1.1 → now reports 77 problems (18 errors, 59 warnings), cleaned up in 2.5 |
+| `npm audit` | 17 → 4 after `npm audit fix` in 1.1 (no major upgrades). Remaining 4 need major upgrades → P3.4 |
+| `store.js` undefined `state` | **Verified** by ESLint (8 × `no-undef`) |
+| Other frontend bugs (task 1.7 list) | From code reading; verify in browser during 1.7 |
