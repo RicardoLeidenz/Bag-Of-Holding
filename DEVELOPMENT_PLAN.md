@@ -66,7 +66,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 |---|---|---|---|---|---|
 | 2.1 ✅ | **Character management:** delete with confirmation, rename, editable skill proficient/expert and saving-throw proficiency. Backend routes `PUT /api/skill`, stat `proficient` field, character `name` | Your launch priority #1 | `routes.py`, `CharacterSelection.jsx`, `SkillsTable.jsx`, `StatBlock.jsx`, `CharacterInfoBlock.jsx` | M | pytest plus a manual end-to-end check |
 | 2.2 ✅ | **Mobile-friendly layout:** responsive grid (`col-12 col-md-*`), collapsible navbar, stacked spell levels, touch-sized inputs | Your launch priority #2 | `pages/*.jsx`, `src/styles/*.css`, `Navbar.jsx` | M | Browser devtools at 375px, 768px and 1280px |
-| 2.3 | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
+| 2.3 ✅ | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
 | 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README setup section corrected (project description already rewritten in the fork) | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
 | 2.5 | **Quality gates:** `npm run lint` clean, GitHub Actions CI running pytest + `npm run build` on each push or PR | Catches regressions automatically | `.github/workflows/ci.yml` (new) | S | Green CI run on the fork |
 | 2.6 | **Production hardening and deploy (Phase 6):** confirm rate limiting sees real client IPs behind Render's proxy (`ProxyFix x_for=1` is an assumption), gunicorn start, build script, prod env vars, CORS limited to the app origin, `FLASK_DEBUG=0`. Hosting: compare Render free web service + Render Postgres (free tier time limits) against Neon free Postgres, confirm current limits, recommend, then **get approval before going public**. Auto-deploy from `main` | Launch | `render.yaml`, `render_build.sh`, `src/app.py` | M | Live smoke test of the full flow plus a mobile check |
@@ -75,6 +75,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 **2.1 notes:** done — rename, skill proficiency/expertise toggle (●/★), saving-throw toggle, delete with inline confirmation on the sheet. Found and fixed: skills/stats/consumables/characters had no defined order, so PostgreSQL moved edited rows to the end of the list. 65 pytest tests (SQLite + PostgreSQL), 67 browser checks.
 **2.2 notes:** done — every page fits phone (375px), tablet (768px) and desktop (1280px) with no sideways scrolling (before: phone sheet 396px too wide, phone spells 766px, login 25px, desktop sheet 12px). Collapsible ☰ menu, stacked sheet, spell grid, ≥24px proficiency toggles. Layout suite added to `npm run test:e2e` (99 browser checks total).
+**2.3 notes:** done — `apiCall()` never throws (offline/non-JSON become readable errors); no `alert()` left (inline messages on forms, toasts for sheet actions); loading/empty/error states for characters, D&D data, subclasses and spells; visible keyboard focus; double-clicked SUBMIT no longer creates two characters (ref guard). E2E now runs on its own servers (`pipenv run e2e-api`, `npm run e2e:app`, ports 3100/3101). 113 browser checks.
 **Seen in screenshots, for 2.3:** ~~dice-button labels overflow their boxes~~ (fixed in 2.2); `input:focus { outline: none }` hides keyboard focus. ~~New characters started with proficiency +0~~ → now +2 (5e level 1).
 
 ## Priority 3 — Post-launch
@@ -84,6 +85,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 4. **Tooling upgrades:** Vite 4→latest (clears the dev-server-only esbuild advisory), React Router 6→7 (clears 2 moderate advisories that don't apply to this app: open redirect needs user-supplied link targets, the other is SSR-only), ESLint 9; frontend unit tests with Vitest.
 5. **Character portrait upload** (Cloudinary is already in the Pipfile).
 6. **Token hardening:** httpOnly cookie sessions or refresh tokens.
+7. **Floating Save Character button** on phones (the sheet is long, so Save sits far down the page): keep it reachable while scrolling, then polish the sheet's save experience further.
 
 ## Verification approach (every task)
 - **Backend:** `pipenv run test`. **Frontend:** `npm run build` and `npm run lint`. Then a manual browser walk-through of the affected flow with both servers running.

@@ -1,10 +1,12 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
+import { GameDataNotice } from "../GameDataNotice.jsx";
 
 export const ClassSelector = ({ onSelectClass }) => {
     const { store } = useGlobalReducer()
     return (
         <div>
-            <label className="input-selector mt-3" htmlFor="name">SELECT A CLASS</label>
+            <h2 className="input-selector mt-3 fs-6">SELECT A CLASS</h2>
+            <GameDataNotice />
             <div className="grid-selector-input mt-3">
                 {
                     store.classes

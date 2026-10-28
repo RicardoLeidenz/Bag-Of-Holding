@@ -7,23 +7,50 @@
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "ecmaFeatures": { "jsx": true }
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "settings": {
-    "react": { "version": "detect" }
+    "react": {
+      "version": "detect"
+    }
   },
-  "plugins": ["react", "react-hooks", "react-refresh"],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "react-refresh"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended"
   ],
-  "ignorePatterns": ["dist", "node_modules", ".venv"],
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    ".venv"
+  ],
   "rules": {
     "react/prop-types": "off",
-    "react-refresh/only-export-components": ["warn", { "allowConstantExport": true }],
+    "react-refresh/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ],
     "no-unused-vars": "warn",
     "no-console": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "vite.config.js"
+      ],
+      "env": {
+        "node": true
+      }
+    }
+  ]
 }

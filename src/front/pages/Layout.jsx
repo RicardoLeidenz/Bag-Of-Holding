@@ -2,73 +2,41 @@ import { Outlet, useNavigate } from "react-router-dom"
 import ScrollToTop from "../components/ScrollToTop"
 import { Navbar } from "../components/Navbar"
 import { Footer } from "../components/Footer"
+import { Toast } from "../components/Toast"
 import { useEffect } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { SESSION_EXPIRED_EVENT } from "../api.js";
 
 // Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
-//FETCH REQUEST FOR CLASS AND RUN THROUGH A USEEFFECT UPON MOUNT
+// It also loads the D&D reference data (races, classes, spells) once for the whole app.
 
 export const Layout = () => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
-    // Fecth all Races and save them to store.js
-    const getRaces = (url) => {
-        fetch(url)
-            .then(
-                (allRaces) => {
-                    return allRaces.json()
-                }
-            )
-            .then(
-                (data) => {
-                    dispatch({
-                        type: "set_races",
-                        payload: data.results
-                    });
-                }
-            )
+    // Fetch races, classes and spells from dnd5eapi.co and save them to store.js
+    const loadGameData = async () => {
+        dispatch({ type: "set_game_data_status", payload: "loading" });
+        try {
+            const [races, classes, spells] = await Promise.all(
+                ["races", "classes", "spells"].map(async (list) => {
+                    const response = await fetch(store.apiURL + "/" + list);
+                    if (!response.ok) throw new Error(list + ": status " + response.status);
+                    return (await response.json()).results;
+                })
+            );
+            dispatch({ type: "set_races", payload: races });
+            dispatch({ type: "set_classes", payload: classes });
+            dispatch({ type: "set_spells", payload: spells });
+            dispatch({ type: "set_game_data_status", payload: "ready" });
+        } catch (error) {
+            dispatch({ type: "set_game_data_status", payload: "error" });
+        }
     }
-    // Fecth all Classes and save them to store.js
-    const getClasses = (url) => {
-        fetch(url)
-            .then(
-                (allClasses) => {
-                    return allClasses.json()
-                }
-            )
-            .then(
-                (data) => {
-                    dispatch({
-                        type: "set_classes",
-                        payload: data.results
-                    });
-                }
-            )
-    }
-    // Fetch all Spells and save them to store.js
-    const getSpells = (url) => {
-        fetch(url)
-            .then(
-                (allSpells) => {
-                    return allSpells.json()
-                }
-            )
-            .then(
-                (data) => {
-                    dispatch({
-                        type: "set_spells",
-                        payload: data.results
-                    });
-                }
-            )
-    }
-    // Call all Fetch functions upon mount
+
+    // Load the reference data upon mount
     useEffect(() => {
-        getRaces(store.apiURL + "/races");
-        getClasses(store.apiURL + "/classes");
-        getSpells(store.apiURL + "/spells");
+        loadGameData();
     }, [])
 
     // When the server rejects our login token (expired or invalid), log out and go to the login page
@@ -85,6 +53,7 @@ export const Layout = () => {
             <Navbar />
             <Outlet />
             <Footer />
+            <Toast />
         </ScrollToTop>
     )
 }

@@ -1,5 +1,5 @@
 import { skillModifier } from "../../rules.js";
-import { apiFetch } from "../../api.js";
+import { apiCall } from "../../api.js";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 export const SkillsTable = (props) => {
     let rows = []
@@ -43,15 +43,14 @@ const SkillCells = ({ skill, stats, proficiency }) => {
         const change = level === "none" ? { proficient: true }
             : level === "proficient" ? { expert: true }
             : { proficient: false };
-        const response = await apiFetch("api/skill", {
+        const { ok, data } = await apiCall("api/skill", {
             method: "PUT",
             body: JSON.stringify({ id: skill.id, ...change }),
         });
-        const data = await response.json();
-        if (response.ok) {
+        if (ok) {
             dispatch({ type: "update_skill", payload: data["Skill Changed"] });
         } else {
-            alert(data.error || "Could not update " + skill.name);
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not update ${skill.name}: ${data.error}` } });
         }
     };
 

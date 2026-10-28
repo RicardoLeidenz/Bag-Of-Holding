@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../api.js";
+import { apiCall } from "../api.js";
+import { InlineMessage } from "../components/InlineMessage.jsx";
 import "../../styles/characterSelection.css";
 
 export const CharacterSelection = () => {
     const [characterList, setCharacterList] = useState([]);
+    const [status, setStatus] = useState("loading"); // loading | ready | error
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const getCharacters = async () => {
-        const response = await apiFetch("api/characters");
-        if (response.ok) {
-            const data = await response.json();
+        setStatus("loading");
+        const { ok, data } = await apiCall("api/characters");
+        if (ok) {
             setCharacterList(data.characters);
+            setStatus("ready");
+        } else {
+            setError(data.error);
+            setStatus("error");
         }
     };
     const chooseCharacter = (character) => {
@@ -25,19 +32,31 @@ export const CharacterSelection = () => {
     return (
         <div className="info-box page-box">
             <div className="text-center">
-                <label className="input-selector mt-3">SELECT A CHARACTER</label>
+                <h1 className="input-selector mt-3 fs-5">SELECT A CHARACTER</h1>
             </div>
-            <div className="character-list mt-3">
+            {status === "loading" ? <InlineMessage kind="info" text="Loading your characters..." /> : ""}
+            {
+                status === "error"
+                    ? <div className="text-center">
+                        <InlineMessage kind="error" text={error} />
+                        <button className="input-selector mt-2" onClick={getCharacters}>TRY AGAIN</button>
+                    </div>
+                    : ""
+            }
+            {
+                status === "ready" && characterList.length === 0
+                    ? <InlineMessage kind="info" text="No characters yet. Create your first adventurer!" />
+                    : ""
+            }
+            <div className="character-list my-3">
                 {
-                    characterList
-                        ? characterList.map((character, index) => {
-                            return (
-                                <div key={index}>
-                                    <button className="input-selection" onClick={() => chooseCharacter(character)}>{character.name}</button>
-                                </div>
-                            )
-                        })
-                        : ""
+                    characterList.map((character) => {
+                        return (
+                            <div key={character.id}>
+                                <button className="input-selection" onClick={() => chooseCharacter(character)}>{character.name}</button>
+                            </div>
+                        )
+                    })
                 }
                 <div>
                     <button className="input-selection" onClick={() => navigate("/charactercreator")}>CREATE NEW</button>
@@ -45,4 +64,4 @@ export const CharacterSelection = () => {
             </div>
         </div>
     );
-}; 
+};

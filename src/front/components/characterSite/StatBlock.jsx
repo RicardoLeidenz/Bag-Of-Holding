@@ -1,6 +1,6 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { useState } from "react";
-import { apiFetch } from "../../api.js";
+import { apiCall } from "../../api.js";
 import { abilityModifier, savingThrow, parseWholeNumber } from "../../rules.js";
 export const StatBlock = (props) => {
     const { dispatch } = useGlobalReducer()
@@ -44,13 +44,12 @@ export const StatBlock = (props) => {
 
     // Toggle proficiency in this ability's saving throw (saved immediately)
     const toggleSaveProficiency = async () => {
-        const response = await apiFetch("api/stat", {
+        const { ok, data } = await apiCall("api/stat", {
             method: "PUT",
             body: JSON.stringify({ "id": props.id, "proficient": !props.proficient }),
         });
-        const data = await response.json();
-        if (!response.ok) {
-            alert(data.error || "Could not update " + props.name);
+        if (!ok) {
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not update ${props.name} save: ${data.error}` } });
             return;
         }
         const updatedStats = props.stats.map(stat => stat.id === props.id ? { ...stat, proficient: data["Stat Changed"].proficient } : stat);
@@ -58,18 +57,17 @@ export const StatBlock = (props) => {
     }
 
     const saveStat = async (value) => {
-        const response = await apiFetch("api/stat", {
+        const { ok, data } = await apiCall("api/stat", {
             method: "PUT",
             body: JSON.stringify({
                 "id": props.id,
                 "value": value
             }),
         });
-        const data = await response.json();
-        if (response.ok) {
+        if (ok) {
             setSavedValue(value);
         } else {
-            alert(data.error || "Could not save " + props.name);
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not save ${props.name}: ${data.error}` } });
         }
     };
 

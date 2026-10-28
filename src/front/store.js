@@ -6,6 +6,8 @@ export const initialStore = () => {
     races: [],
     classes: [],
     spells: [],
+    // Races, classes and spells from dnd5eapi.co: "loading" | "ready" | "error"
+    gameDataStatus: "loading",
     user: null,
     inventoryList: [],
     bagItems: [],
@@ -15,6 +17,8 @@ export const initialStore = () => {
     error: null,
     // Restore the login saved in the browser, so a page refresh keeps the user logged in
     token: getToken(),
+    // Short message shown at the bottom of the screen: { id, kind: "error" | "success", text }
+    notice: null,
     apiURL: "https://www.dnd5eapi.co/api/2014",
   };
 };
@@ -38,6 +42,24 @@ export default function storeReducer(store, action = {}) {
         ...store,
         spells: action.payload,
       };
+    case "set_game_data_status":
+      return {
+        ...store,
+        gameDataStatus: action.payload,
+      };
+
+    case "show_notice":
+      return {
+        ...store,
+        notice: { id: Date.now(), kind: action.payload.kind || "error", text: action.payload.text },
+      };
+
+    case "hide_notice":
+      // Only hide the notice that asked to be hidden (a newer one may have replaced it)
+      return store.notice && store.notice.id === action.payload
+        ? { ...store, notice: null }
+        : store;
+
     case "log_in":
       return {
         ...store,

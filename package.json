@@ -12,7 +12,8 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test:e2e": "node tests/e2e/run.mjs"
+    "test:e2e": "node tests/e2e/run.mjs",
+    "e2e:app": "VITE_BACKEND_URL= API_PROXY_TARGET=http://localhost:3101 vite --port 3100 --strictPort"
   },
   "author": {
     "name": "Alejandro Sanchez",

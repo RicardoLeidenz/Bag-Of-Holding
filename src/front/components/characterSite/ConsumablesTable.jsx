@@ -1,6 +1,6 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { useState } from "react";
-import { apiFetch } from "../../api.js";
+import { apiCall } from "../../api.js";
 import { parseWholeNumber } from "../../rules.js";
 export const ConsumablesTable = (props) => {
     const { dispatch } = useGlobalReducer();
@@ -23,16 +23,15 @@ export const ConsumablesTable = (props) => {
     const addConsumable = async () => {
         const name = newConsumable.trim();
         if (name === "") return;
-        const response = await apiFetch("api/consumable", {
+        const { ok, data } = await apiCall("api/consumable", {
             method: "POST",
             body: JSON.stringify({
                 "name": name,
                 "character_id": props.character_id
             }),
         });
-        const data = await response.json();
-        if (!response.ok) {
-            alert(data.error || "Could not add consumable");
+        if (!ok) {
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not add ${name}: ${data.error}` } });
             return;
         }
         // Use the consumable the server created, so it has its real id
@@ -45,16 +44,15 @@ export const ConsumablesTable = (props) => {
         const amount = parseWholeNumber(text ?? "");
         if (amount === null || amount < 0 || amount > 9999 || amount === consumable.amount) return;
 
-        const response = await apiFetch("api/consumable", {
+        const { ok, data } = await apiCall("api/consumable", {
             method: "PUT",
             body: JSON.stringify({
                 "id": consumable.id,
                 "amount": amount
             }),
         });
-        const data = await response.json();
-        if (!response.ok) {
-            alert(data.error || "Could not save amount");
+        if (!ok) {
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not save ${consumable.name}: ${data.error}` } });
             return;
         }
         setList(consumables.map(c => c.id === consumable.id ? data["Consumable Changed"] : c));
@@ -62,7 +60,12 @@ export const ConsumablesTable = (props) => {
 
     return (
         <div className="d-flex align-items-start">
-            <table className="m-2 flex-grow-1">
+            {
+                consumables.length === 0
+                    ? <p className="m-2 flex-grow-1 text-white">No consumables yet. Use Add to track potions, ammo or spell components.</p>
+                    : ""
+            }
+            <table className={"m-2 flex-grow-1" + (consumables.length === 0 ? " d-none" : "")}>
                 <thead>
                     <tr>
                         <th>Consumable</th>

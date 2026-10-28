@@ -110,3 +110,71 @@ body {
   line-height: 1;
   padding: 0.3rem 0.6rem;
 }
+
+/* TOAST: short messages at the bottom of the screen */
+.toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  width: min(28rem, calc(100% - 2rem));
+  z-index: 1080;
+}
+.app-toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 3px solid #bfb699;
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.app-toast.error {
+  background-color: #a2272f;
+}
+.app-toast.success {
+  background-color: #1e6b52;
+}
+.app-toast-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  min-width: 2rem;
+  min-height: 2rem;
+}
+
+/* INLINE MESSAGES: next to forms */
+.inline-message {
+  margin: 0.75rem auto 0 auto;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  max-width: 24rem;
+  font-weight: bold;
+}
+.inline-message.error {
+  background-color: #fbe3e4;
+  color: #8a1c24;
+}
+.inline-message.success {
+  background-color: #dff3ea;
+  color: #1e6b52;
+}
+.inline-message.info {
+  color: whitesmoke;
+}
+
+/* KEYBOARD FOCUS: gold ring with a dark edge, visible on every background used here */
+:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 5px #40202c;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

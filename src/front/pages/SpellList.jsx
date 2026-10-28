@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SpellsBlock } from "../components/spellSite/SpellsBlock.jsx";
 import { SpellBasicInfo } from "../components/spellSite/SpellBasicInfo.jsx";
 import { SpellBonusInfo } from "../components/spellSite/SpellBonusInfo.jsx";
+import { GameDataNotice } from "../components/GameDataNotice.jsx";
 import "../../styles/spellList.css";
 
 export const SpellList = () => {
@@ -24,6 +25,7 @@ export const SpellList = () => {
             <div className="row g-3 px-sm-2">
                 {/* ALL SPELL LEVELS: as many per row as fit the screen */}
                 <div className="col-12 col-lg-9">
+                    <GameDataNotice />
                     <div className="spell-levels">
                         {
                             levels.map(

@@ -21,9 +21,6 @@
 label {
   font-size: medium;
 }
-input:focus {
-  outline: none;
-}
 /* STAT SPECIFIC */
 .stat-block-box {
   background-color: #bfb699;

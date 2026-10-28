@@ -13,9 +13,8 @@ export async function run(b, { email, password }) {
     // Wrong password shows the server's message and stays logged out
     await fill('input[name="email"]', email); await fill('input[name="password"]', "wrong-password");
     await clickText("button", "SUBMIT");
-    check("wrong password: error shown", await waitFor(`window.__alerts.length > 0`), "no alert");
-    const alertText = await evaluate("window.__alerts[0]");
-    check("wrong password: message is from server", alertText === "Invalid email or password", alertText);
+    check("wrong password: inline error shown", await waitFor(`document.querySelector(".inline-message.error")?.innerText === "Invalid email or password"`), await evaluate(`document.querySelector(".inline-message.error")?.innerText`));
+    check("wrong password: no alert() popup", (await evaluate("window.__alerts.length")) === 0);
     check("wrong password: no token saved", (await evaluate("localStorage.getItem('token')")) === null);
 
     // Log in

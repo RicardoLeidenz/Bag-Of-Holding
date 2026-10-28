@@ -38,3 +38,24 @@ export const apiFetch = async (path, options = {}) => {
     }
     return response
 }
+
+// Calls the API and always resolves to { ok, status, data } — it never throws.
+// Network failures and non-JSON replies become a readable data.error for the user.
+export const apiCall = async (path, options = {}) => {
+    let response
+    try {
+        response = await apiFetch(path, options)
+    } catch (error) {
+        return { ok: false, status: 0, data: { error: "Could not reach the server. Check your connection and try again." } }
+    }
+    let data
+    try {
+        data = await response.json()
+    } catch (error) {
+        data = {}
+    }
+    if (!response.ok && !data.error) {
+        data = { ...data, error: `Something went wrong (error ${response.status}). Please try again.` }
+    }
+    return { ok: response.ok, status: response.status, data }
+}

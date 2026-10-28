@@ -139,3 +139,9 @@ body {
 .box {
     font-size: large;
 }
+
+.password-hint {
+    margin: -8px 0 0 0;
+    font-size: 0.9rem;
+    color: #40202c;
+}

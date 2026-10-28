@@ -1,10 +1,12 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer.jsx";
+import { GameDataNotice } from "../GameDataNotice.jsx";
 
 export const RaceSelector = ({ setCharacterRace }) => {
-    const { store, dispatch } = useGlobalReducer()
+    const { store } = useGlobalReducer()
     return (
         <div>
-            <label className="input-selector mt-3" htmlFor="name">SELECT A RACE</label>
+            <h2 className="input-selector mt-3 fs-6">SELECT A RACE</h2>
+            <GameDataNotice />
             <div className="grid-selector-input mt-3">
                 {
                     store.races

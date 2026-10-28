@@ -3,7 +3,7 @@ export const NameSelector = ({ setCharacterName , characterName}) => {
         <div>
             <label className="input-selector mt-5" htmlFor="name">ENTER CHARACTER NAME</label>
             <br></br>
-            <input className="input-field my-4 accent" type="text" id="name" name="name" onChange={e => setCharacterName(e.target.value)} value={characterName} />
+            <input className="input-field my-4 accent" type="text" id="name" name="name" maxLength={25} onChange={e => setCharacterName(e.target.value)} value={characterName} />
         </div>
     );
 };

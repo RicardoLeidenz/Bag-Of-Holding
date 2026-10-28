@@ -6,7 +6,8 @@ import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-export const APP = (process.env.APP || "http://localhost:3000").replace(/\/+$/, "");
+// Defaults to the separate test servers (npm run e2e:app + pipenv run e2e-api), so your dev servers keep running
+export const APP = (process.env.APP || "http://localhost:3100").replace(/\/+$/, "");
 // The API is reached through the app's own address (Vite proxy in development, Flask in production)
 export const API = APP + "/api/";
 const DEBUG_PORT = Number(process.env.CHROME_DEBUG_PORT || 9222);

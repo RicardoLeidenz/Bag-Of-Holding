@@ -89,6 +89,6 @@ export async function run(b, { token }) {
     check("delete: goes to character selection", await waitFor(`location.pathname === "/characterselection"`), await evaluate("location.pathname"));
     check("delete: removed from database", (await api("GET", "character/" + character.id, null, token)).status === 404);
     await sleep(500);
-    check("delete: not in character list", !(await evaluate(`document.body.innerText.includes("Renamed")`)));
+    check("delete: not in character list", !(await evaluate(`document.querySelector(".character-list").innerText.includes("Renamed")`)));
     check("delete: navbar has no link to it", !(await evaluate(`[...document.querySelectorAll("a")].some(a => a.getAttribute("href") === "/character/${character.id}")`)));
 }

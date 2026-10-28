@@ -6,14 +6,16 @@ import { SkillsTable } from "../components/characterSite/SkillsTable.jsx";
 import { ConsumablesTable } from "../components/characterSite/ConsumablesTable.jsx";
 import { DiceBar } from "../components/characterSite/DiceBar.jsx";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { apiFetch } from "../api.js";
+import { apiCall } from "../api.js";
+import { InlineMessage } from "../components/InlineMessage.jsx";
 import "../../styles/characterSite.css";
 export const Character = () => {
     const { store, dispatch } = useGlobalReducer()
     // The character id comes from the URL (/character/:id), so a page refresh can reload it
     const { id } = useParams();
     const [status, setStatus] = useState("loading") // loading | ready | not_found | error
-    const [saveMessage, setSaveMessage] = useState("")
+    const [saveState, setSaveState] = useState({ kind: "", text: "" })
+    const [loadAttempt, setLoadAttempt] = useState(0)
     const [confirmingDelete, setConfirmingDelete] = useState(false)
     const [deleteError, setDeleteError] = useState("")
     const navigate = useNavigate();
@@ -21,35 +23,26 @@ export const Character = () => {
     let characterInfo = store.characterInfo
 
     const saveCharacter = async (e) => {
-        setSaveMessage("Saving...");
-        try {
-            const response = await apiFetch("api/character", {
-                method: "PUT",
-                body: JSON.stringify(characterInfo),
-            });
-            const data = await response.json();
-            setSaveMessage(response.ok ? "Saved!" : (data.error || "Could not save"));
-        } catch (error) {
-            setSaveMessage("Could not reach the server");
-        }
+        setSaveState({ kind: "saving", text: "Saving..." });
+        const { ok, data } = await apiCall("api/character", {
+            method: "PUT",
+            body: JSON.stringify(characterInfo),
+        });
+        setSaveState(ok ? { kind: "success", text: "Saved!" } : { kind: "error", text: data.error });
     };
 
     const deleteCharacter = async () => {
         setDeleteError("");
-        try {
-            const response = await apiFetch("api/character", {
-                method: "DELETE",
-                body: JSON.stringify({ id: characterInfo.id }),
-            });
-            if (response.ok) {
-                dispatch({ type: "clear_character" });
-                navigate("/characterselection");
-            } else {
-                const data = await response.json();
-                setDeleteError(data.error || "Could not delete character");
-            }
-        } catch (error) {
-            setDeleteError("Could not reach the server");
+        const { ok, data } = await apiCall("api/character", {
+            method: "DELETE",
+            body: JSON.stringify({ id: characterInfo.id }),
+        });
+        if (ok) {
+            dispatch({ type: "clear_character" });
+            dispatch({ type: "show_notice", payload: { kind: "success", text: `${characterInfo.name} was deleted.` } });
+            navigate("/characterselection");
+        } else {
+            setDeleteError(data.error);
         }
     };
 
@@ -57,26 +50,23 @@ export const Character = () => {
     useEffect(() => {
         const loadCharacter = async () => {
             setStatus("loading");
-            try {
-                const response = await apiFetch("api/character/" + id);
-                if (response.ok) {
-                    const data = await response.json();
-                    dispatch({ type: "select_character", payload: data.character });
-                    setStatus("ready");
-                } else {
-                    setStatus(response.status === 404 ? "not_found" : "error");
-                }
-            } catch (error) {
-                setStatus("error");
+            const { ok, status: httpStatus, data } = await apiCall("api/character/" + id);
+            if (ok) {
+                dispatch({ type: "select_character", payload: data.character });
+                setStatus("ready");
+            } else {
+                setStatus(httpStatus === 404 ? "not_found" : "error");
             }
         };
         loadCharacter();
-    }, [id])
+    }, [id, loadAttempt])
 
     if (status === "not_found" || status === "error") {
         return (
             <div className="info-box page-box p-4 text-center text-white">
                 <h2>{status === "not_found" ? "CHARACTER NOT FOUND" : "COULD NOT LOAD CHARACTER"}</h2>
+                {status === "error" ? <p>Check your connection and try again.</p> : ""}
+                {status === "error" ? <button className="input-selector" onClick={() => setLoadAttempt(loadAttempt + 1)}>TRY AGAIN</button> : ""}
                 <Link to="/characterselection" className="input-selector">BACK TO CHARACTERS</Link>
             </div>
         );
@@ -140,8 +130,12 @@ export const Character = () => {
                         <DiceBar />
                     </div>
                     <div className="info-box rounded p-1 mb-3">
-                        <button className="character-info-box save-button" onClick={saveCharacter}>Save Character</button>
-                        {saveMessage ? <p className="text-center m-1" role="status">{saveMessage}</p> : ""}
+                        <button className="character-info-box save-button" onClick={saveCharacter} disabled={saveState.kind === "saving"}>Save Character</button>
+                        {
+                            saveState.kind === "error"
+                                ? <InlineMessage kind="error" text={saveState.text} />
+                                : saveState.text ? <p className="text-center m-1" role="status">{saveState.text}</p> : ""
+                        }
                     </div>
                     {/* DELETE, with an inline confirmation step */}
                     <div className="mb-3 text-center">
@@ -154,7 +148,7 @@ export const Character = () => {
                                 </div>
                                 : <button className="delete-character-button" onClick={() => setConfirmingDelete(true)}>Delete character</button>
                         }
-                        {deleteError ? <p role="status">{deleteError}</p> : ""}
+                        <InlineMessage kind="error" text={deleteError} />
                     </div>
                 </div>
             </div>

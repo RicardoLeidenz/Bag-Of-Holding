@@ -9,19 +9,15 @@ export const SpellsBlock = (props) => {
     }
 
     // Fetch Selected Spell Information
-    const getSpellInfo = (url) => {
-        fetch(url)
-            .then(
-                (spellInfo) => {
-                    return spellInfo.json();
-                }
-            )
-            .then(
-                (data) => {
-                    // Pass information to SpellList.jsx through UseState
-                    props.setSpellSelected(data);
-                }
-            )
+    const getSpellInfo = async (url) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("status " + response.status);
+            // Pass information to SpellList.jsx through UseState
+            props.setSpellSelected(await response.json());
+        } catch (error) {
+            dispatch({ type: "show_notice", payload: { kind: "error", text: "Could not load that spell. Check your connection and try again." } });
+        }
     }
 
     return (

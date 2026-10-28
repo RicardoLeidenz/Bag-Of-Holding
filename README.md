@@ -82,13 +82,13 @@ pipenv run test
 TEST_DATABASE_URL=postgresql://<your-mac-username>@localhost:5432/bag_of_holding_test pipenv run test
 ```
 
-**Browser end-to-end tests** (need Google Chrome installed). Start the API with rate limiting off so repeated runs aren't blocked, start the frontend, then run the suite:
+**Browser end-to-end tests** (need Google Chrome installed). They use their own servers on ports 3100/3101, so your normal dev servers can keep running:
 ```bash
-RATELIMIT_ENABLED=false pipenv run start   # terminal 1
-npm run dev                                # terminal 2
-npm run test:e2e                           # terminal 3
+pipenv run e2e-api    # terminal 1: test API on 3101, rate limiting off
+npm run e2e:app       # terminal 2: test frontend on 3100
+npm run test:e2e      # terminal 3: run the suite
 ```
-The suite launches its own hidden Chrome with a temporary profile and creates its own test user.
+The suite launches its own hidden Chrome with a temporary profile and creates its own test users in your development database.
 
 ### Usage
 Once both servers are running, you can register a new account or log in as an existing user. From there, you can:
