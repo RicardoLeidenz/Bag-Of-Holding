@@ -23,7 +23,7 @@ export const CharacterSelection = () => {
     }, [])
 
     return (
-        <div className="info-box m-5">
+        <div className="info-box page-box">
             <div className="text-center">
                 <label className="input-selector mt-3">SELECT A CHARACTER</label>
             </div>

@@ -3,12 +3,37 @@
   border-color: #bfb699;
   border-width: 15px;
 }
-.spells-box {
-  width: 20%;
+/* Spell levels: as many boxes per row as fit the screen */
+.spell-levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 1rem;
 }
 .spells-options {
-  aspect-ratio: 1 / 1;
-  overflow: scroll;
+  max-height: 14rem;
+  overflow-y: auto;
+}
+.spell-option {
+  display: block;
+  width: 100%;
+  min-height: 2.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid whitesmoke;
+  color: whitesmoke;
+  font-size: 1.1rem;
+  padding: 0.3rem;
+}
+.spell-option:hover,
+.spell-option:focus-visible {
+  background-color: #a8474f;
+}
+/* Details stay in view while scrolling the list on large screens */
+@media (min-width: 992px) {
+  .spell-info-panel {
+    position: sticky;
+    top: 1rem;
+  }
 }
 .spell-information-box {
   background-color: whitesmoke;
@@ -16,8 +41,8 @@
   border-style: solid;
   border-color: #bfb699;
   border-width: 5px;
-  aspect-ratio: 2 / 1;
-  overflow: scroll;
+  max-height: 20rem;
+  overflow-y: auto;
   font-size: large;
 }
 .close-button {
@@ -27,4 +52,5 @@
   border-color: #bfb699;
   border-width: 5px;
   font-size: larger;
+  min-height: 2.75rem;
 }

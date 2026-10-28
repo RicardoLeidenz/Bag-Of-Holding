@@ -11,7 +11,7 @@ export const SkillsTable = (props) => {
     }
 
     return (
-        <table className="">
+        <table className="w-100">
             <tbody>
                 {rows.map((pair, index) => (
                     // IN EACH ROW WE SHOW THE SKILL NAME AND THE ABILITY IT BRANCHES FROM

@@ -1,12 +1,21 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { clearSession } from "../api.js";
 
 export const Navbar = () => {
 	const { store, dispatch } = useGlobalReducer();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const token = store.token;
 	const currentCharacterId = store.characterInfo.id;
+	// Small screens show a ☰ button; the menu opens below the bar
+	const [menuOpen, setMenuOpen] = useState(false);
+
+	// Close the menu after navigating to another page
+	useEffect(() => {
+		setMenuOpen(false);
+	}, [location.pathname]);
 
 	const logOut = () => {
 		clearSession();
@@ -14,41 +23,39 @@ export const Navbar = () => {
 		navigate("/");
 	}
 	return (
-		<nav className="navbar header-secondary">
-			<Link to={token ? "/characterselection" : "/"}>
-				<span className="navbar-brand mb-0 h1 accent">BAG OF HOLDING</span>
+		<nav className="navbar navbar-expand-lg header-secondary px-3">
+			<Link to={token ? "/characterselection" : "/"} className="navbar-brand mb-0 h1 accent">
+				BAG OF HOLDING
 			</Link>
-
-			<div className="ml-auto">
-				{
-					token
-						? <span>
-							<Link to="/characterselection">
-								<button className="accent btn btn-primary navbar-button">Character Selection</button>
-							</Link>
-							<Link to="/charactercreator">
-								<button className="accent btn btn-primary navbar-button">Character Creator</button>
-							</Link>
-							{
-								currentCharacterId
-									? <Link to={"/character/" + currentCharacterId}>
-										<button className="accent btn btn-primary navbar-button">Character Site</button>
-									</Link>
-									: ""
-							}
-							<Link to="/spells">
-								<button className="accent btn btn-primary navbar-button">Spells</button>
-							</Link>
-							<button
-								className="accent btn btn-primary navbar-button"
-								onClick={logOut}
-							>
-								Log Out
-							</button>
-						</span>
-						: ""
-				}
-			</div>
+			{
+				token
+					? <>
+						<button
+							type="button"
+							className="navbar-toggler-custom d-lg-none"
+							aria-controls="main-menu"
+							aria-expanded={menuOpen}
+							aria-label={menuOpen ? "Close menu" : "Open menu"}
+							onClick={() => setMenuOpen(!menuOpen)}
+						>
+							{menuOpen ? "✕" : "☰"}
+						</button>
+						<div id="main-menu" className={"collapse navbar-collapse" + (menuOpen ? " show" : "")}>
+							<div className="navbar-nav ms-auto">
+								<Link to="/characterselection" className="btn navbar-button">Character Selection</Link>
+								<Link to="/charactercreator" className="btn navbar-button">Character Creator</Link>
+								{
+									currentCharacterId
+										? <Link to={"/character/" + currentCharacterId} className="btn navbar-button">Character Site</Link>
+										: ""
+								}
+								<Link to="/spells" className="btn navbar-button">Spells</Link>
+								<button className="btn navbar-button" onClick={logOut}>Log Out</button>
+							</div>
+						</div>
+					</>
+					: ""
+			}
 		</nav>
 	);
 };

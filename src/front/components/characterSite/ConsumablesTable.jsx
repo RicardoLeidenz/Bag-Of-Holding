@@ -61,8 +61,8 @@ export const ConsumablesTable = (props) => {
     };
 
     return (
-        <div className="d-flex">
-            <table className="m-2">
+        <div className="d-flex align-items-start">
+            <table className="m-2 flex-grow-1">
                 <thead>
                     <tr>
                         <th>Consumable</th>

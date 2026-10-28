@@ -25,19 +25,19 @@ export const SpellsBlock = (props) => {
     }
 
     return (
-        <div className="info-box spells-box m-3">
+        <div className="info-box spells-box">
             <h2 className="stat-block-info">{props.lvl == 0 ? "CANTRIPS" : "LEVEL " + props.lvl}</h2>
             <div className="spells-options">
                 {
                     store.spells
                         ? getSpellsByLevel().map((spell, index) => {
                             return (
-                                <div key={index} >
-                                    <h4
-                                        className="border-bottom"
-                                        onClick={() => getSpellInfo(store.apiURL + "/spells/" + spell.index)}
-                                    >{spell.name}</h4>
-                                </div>
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className="spell-option"
+                                    onClick={() => getSpellInfo(store.apiURL + "/spells/" + spell.index)}
+                                >{spell.name}</button>
                             )
                         })
                         : ""

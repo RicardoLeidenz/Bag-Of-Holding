@@ -5,6 +5,7 @@ import { APP, api, connect, launchChrome, createCharacter } from "./lib.mjs";
 import * as session from "./session.mjs";
 import * as sheet from "./sheet.mjs";
 import * as management from "./management.mjs";
+import * as layout from "./layout.mjs";
 
 try {
     await fetch(APP);
@@ -29,7 +30,7 @@ await createCharacter(token, "Aria");
 const stopChrome = await launchChrome();
 const browser = await connect();
 let crashed = false;
-for (const [name, suite] of [["session", session], ["sheet", sheet], ["management", management]]) {
+for (const [name, suite] of [["session", session], ["sheet", sheet], ["management", management], ["layout", layout]]) {
     console.log(`\n${name}`);
     try {
         await suite.run(browser, { email, password, token });

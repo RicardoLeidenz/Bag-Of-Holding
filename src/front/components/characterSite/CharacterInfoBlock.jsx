@@ -8,7 +8,7 @@ export const CharacterInfoBlock = (props) => {
         //  ALL THIS INFORMATION IS SUPPOSED TO BE SELECTED USING THE DND API WITH ALL CHARACTER OPTIONS
         <div>
             {/* CHARACTER PICTURE */}
-            <img src="https://i.pinimg.com/236x/aa/00/72/aa0072133c6bb0e1d968052509292a89.jpg" className="character-picture m-3"></img>
+            <img src="https://i.pinimg.com/236x/aa/00/72/aa0072133c6bb0e1d968052509292a89.jpg" className="character-picture m-3" alt="Character portrait"></img>
 
             {/* CHARACTER NAME */}
             <div className="character-info-box m-3">
@@ -50,25 +50,31 @@ export const CharacterInfoBlock = (props) => {
                 <h5 id="subClass">{props.subClass}</h5>
             </div>
             {/* CHARACTER HP/AC/HITDICE*/}
-            <div className="d-flex">
-                <div className="character-info-box mx-3 p-2 w-25">
-                    <label htmlFor="hp">HP</label>
-                    <CharacterNumberInput id="hp" field="hp" value={props.hp} min={0} max={9999} className="character-info-input no-spinner" />
+            <div className="row g-2 mx-2 mb-3">
+                <div className="col-4">
+                    <div className="character-info-box p-2 h-100">
+                        <label htmlFor="hp">HP</label>
+                        <CharacterNumberInput id="hp" field="hp" value={props.hp} min={0} max={9999} className="character-info-input no-spinner" />
+                    </div>
                 </div>
-                <div className="character-info-box mx-3 p-2 w-25">
-                    <label htmlFor="ac">AC</label>
-                    <CharacterNumberInput id="ac" field="ac" value={props.ac} min={0} max={99} className="character-info-input no-spinner" />
+                <div className="col-4">
+                    <div className="character-info-box p-2 h-100">
+                        <label htmlFor="ac">AC</label>
+                        <CharacterNumberInput id="ac" field="ac" value={props.ac} min={0} max={99} className="character-info-input no-spinner" />
+                    </div>
                 </div>
-                <div className="character-info-box mx-3 p-2 w-25">
-                    <label htmlFor="hitDice">HIT DICE</label>
-                    <input
-                        id="hitDice"
-                        type="text"
-                        className="character-info-input"
-                        maxLength={5}
-                        onChange={e => dispatch({ type: "update_character_fields", payload: { hitDice: e.target.value } })}
-                        value={props.hitDice}
-                    />
+                <div className="col-4">
+                    <div className="character-info-box p-2 h-100">
+                        <label htmlFor="hitDice">HIT DICE</label>
+                        <input
+                            id="hitDice"
+                            type="text"
+                            className="character-info-input"
+                            maxLength={5}
+                            onChange={e => dispatch({ type: "update_character_fields", payload: { hitDice: e.target.value } })}
+                            value={props.hitDice}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

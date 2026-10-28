@@ -7,6 +7,8 @@
 .character-picture {
   border: 5px solid #008080;
   border-radius: 15px 50px;
+  max-width: calc(100% - 2rem);
+  height: auto;
 }
 .character-info-input {
   background-color: transparent;
@@ -27,6 +29,20 @@ input:focus {
   background-color: #bfb699;
   border: 5px solid #008080;
 }
+.stat-block-box h4 {
+  font-size: 1.1rem;
+  overflow-wrap: break-word;
+}
+/* CHK / SAV labels inside the small ability boxes */
+.stat-block-box label {
+  font-size: 0.75rem;
+  display: block;
+}
+@media (max-width: 575.98px) {
+  .stat-block-box h4 {
+    font-size: 0.9rem;
+  }
+}
 .stat-block-info {
   background-color: whitesmoke;
   color: #008080;
@@ -42,18 +58,25 @@ input:focus {
 }
 
 /* DICE BAR SPECIFIC */
+/* Dice fill the available width: 6 in a row on phones, 2-3 per row in the narrow desktop column */
+.dice-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.25rem, 1fr));
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
 .dice-block {
   background-color: whitesmoke;
   border: 5px solid #008080;
   border-radius: 25%;
   color: #008080;
   aspect-ratio: 1 / 1;
-  width: 75%;
-  margin: 5px;
+  width: 100%;
+  padding: 0;
 }
-.dice-box {
-  margin: auto;
-  width: 50%;
+.dice-block h3 {
+  font-size: 1.15rem;
+  margin: 0;
 }
 /* CONSMABLE TABLE SPECIFIC */
 .consumableCount {
@@ -115,7 +138,11 @@ th {
   background: transparent;
   border: none;
   color: inherit;
-  padding: 0 0.35rem 0 0;
+  padding: 0;
+  margin-right: 0.2rem;
+  /* large enough to tap on a phone */
+  min-width: 1.6rem;
+  min-height: 1.6rem;
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
@@ -125,7 +152,12 @@ th {
   border-radius: 3px;
 }
 /* DELETE CHARACTER */
+.save-button {
+  width: 100%;
+  min-height: 2.75rem;
+}
 .delete-character-button {
+  min-height: 2.25rem;
   background: transparent;
   border: 1px solid #c0392b;
   border-radius: 4px;

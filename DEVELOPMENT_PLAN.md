@@ -65,7 +65,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
 | 2.1 ✅ | **Character management:** delete with confirmation, rename, editable skill proficient/expert and saving-throw proficiency. Backend routes `PUT /api/skill`, stat `proficient` field, character `name` | Your launch priority #1 | `routes.py`, `CharacterSelection.jsx`, `SkillsTable.jsx`, `StatBlock.jsx`, `CharacterInfoBlock.jsx` | M | pytest plus a manual end-to-end check |
-| 2.2 | **Mobile-friendly layout:** responsive grid (`col-12 col-md-*`), collapsible navbar, stacked spell levels, touch-sized inputs | Your launch priority #2 | `pages/*.jsx`, `src/styles/*.css`, `Navbar.jsx` | M | Browser devtools at 375px, 768px and 1280px |
+| 2.2 ✅ | **Mobile-friendly layout:** responsive grid (`col-12 col-md-*`), collapsible navbar, stacked spell levels, touch-sized inputs | Your launch priority #2 | `pages/*.jsx`, `src/styles/*.css`, `Navbar.jsx` | M | Browser devtools at 375px, 768px and 1280px |
 | 2.3 | **UX polish:** loading and error states, inline form errors instead of `alert()`, empty states, remove `console.log` | Public users need feedback | Pages and components | S–M | Manual: offline backend, bad login, empty lists |
 | 2.4 | **Branding:** own favicon and title, remove 4Geeks pages and assets, local default portrait (no Pinterest hotlink), footer credits, README setup section corrected (project description already rewritten in the fork) | Portfolio quality | `index.html`, `public/`, `docs/`, `Footer.jsx`, `CharacterInfoBlock.jsx`, `README.md` | S | Visual check |
 | 2.5 | **Quality gates:** `npm run lint` clean, GitHub Actions CI running pytest + `npm run build` on each push or PR | Catches regressions automatically | `.github/workflows/ci.yml` (new) | S | Green CI run on the fork |
@@ -74,7 +74,8 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 **Launch = Priority 1 + Priority 2.**
 
 **2.1 notes:** done — rename, skill proficiency/expertise toggle (●/★), saving-throw toggle, delete with inline confirmation on the sheet. Found and fixed: skills/stats/consumables/characters had no defined order, so PostgreSQL moved edited rows to the end of the list. 65 pytest tests (SQLite + PostgreSQL), 67 browser checks.
-**Seen in screenshots, for 2.2/2.3:** dice-button labels overflow their boxes; `input:focus { outline: none }` hides keyboard focus. ~~New characters started with proficiency +0~~ → now +2 (5e level 1).
+**2.2 notes:** done — every page fits phone (375px), tablet (768px) and desktop (1280px) with no sideways scrolling (before: phone sheet 396px too wide, phone spells 766px, login 25px, desktop sheet 12px). Collapsible ☰ menu, stacked sheet, spell grid, ≥24px proficiency toggles. Layout suite added to `npm run test:e2e` (99 browser checks total).
+**Seen in screenshots, for 2.3:** ~~dice-button labels overflow their boxes~~ (fixed in 2.2); `input:focus { outline: none }` hides keyboard focus. ~~New characters started with proficiency +0~~ → now +2 (5e level 1).
 
 ## Priority 3 — Post-launch
 1. **Inventory (first):** Item/CharacterItem API, item catalog (dnd5eapi equipment plus custom items), quantity and equip toggle, a real UI replacing `item.js`. Remove the dead `Inventory.jsx`/`Bag.jsx`.

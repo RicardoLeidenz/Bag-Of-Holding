@@ -75,7 +75,7 @@ export const Character = () => {
 
     if (status === "not_found" || status === "error") {
         return (
-            <div className="info-box m-5 p-4 text-center text-white">
+            <div className="info-box page-box p-4 text-center text-white">
                 <h2>{status === "not_found" ? "CHARACTER NOT FOUND" : "COULD NOT LOAD CHARACTER"}</h2>
                 <Link to="/characterselection" className="input-selector">BACK TO CHARACTERS</Link>
             </div>
@@ -89,64 +89,73 @@ export const Character = () => {
 
     return (
         // key: remount the sheet when switching characters, so each block starts from fresh data
-        <div className="text-white my-5 row" key={characterInfo.id}>
-            {/* BLOCK CONTAINING ALL CHARACTER DETAILS */}
-            <div className="col-3 info-box rounded m-4">
-                <CharacterInfoBlock
-                    name={characterInfo.name}
-                    race={characterInfo.race}
-                    level={characterInfo.level}
-                    characterClass={characterInfo.characterClass}
-                    subClass={characterInfo.subClass}
-                    hp={characterInfo.hp}
-                    ac={characterInfo.ac}
-                    hitDice={characterInfo.hitDice}
-                />
-            </div>
-            <div className="col-6">
-                {/* BLOCK CONTAINING ALL CHARACTER STATS */}
-                <div className="row info-box rounded py-3 mb-4">
-                    <CharacterStatsBlock
-                        stats={characterInfo.stats}
-                        speed={characterInfo.speed}
-                        initiative={characterInfo.initiative}
-                        proficiency={characterInfo.proficiency}
-                        skills={characterInfo.skills}
-                    />
-                </div>
-                <div className="d-flex">
-                    {/* BLOCK CONTAINING ALL CHARACTER SKILLS */}
-                    <div className="info-box rounded me-4">
-                        <h3>SKILLS</h3>
-                        <SkillsTable skillList={characterInfo.skills} stats={characterInfo.stats} proficiency={characterInfo.proficiency}></SkillsTable>
-                    </div>
-                    {/* BLOCK CONTAINING ALL CONSUMABLES */}
-                    <div className="col-5 info-box rounded">
-                        <ConsumablesTable consumables={characterInfo.consumables} character_id={characterInfo.id}></ConsumablesTable>
+        // Layout: one column on phones; on large screens info | stats & skills | dice & actions
+        <div className="container-fluid text-white my-4" key={characterInfo.id}>
+            <div className="row g-3 g-lg-4 px-sm-2">
+                {/* BLOCK CONTAINING ALL CHARACTER DETAILS */}
+                <div className="col-12 col-lg-3">
+                    <div className="info-box rounded h-100">
+                        <CharacterInfoBlock
+                            name={characterInfo.name}
+                            race={characterInfo.race}
+                            level={characterInfo.level}
+                            characterClass={characterInfo.characterClass}
+                            subClass={characterInfo.subClass}
+                            hp={characterInfo.hp}
+                            ac={characterInfo.ac}
+                            hitDice={characterInfo.hitDice}
+                        />
                     </div>
                 </div>
-            </div>
-            {/* BLOCK CONTAINING ALL DICE */}
-            <div className="col-2">
-                <div className="info-box rounded m-4 p-1">
-                    <DiceBar />
-                </div>
-                <div className="info-box rounded m-4 p-1">
-                    <button className="character-info-box" onClick={saveCharacter}>Save Character</button>
-                    {saveMessage ? <p className="text-center m-1" role="status">{saveMessage}</p> : ""}
-                </div>
-                {/* DELETE, with an inline confirmation step */}
-                <div className="m-4 text-center">
-                    {
-                        confirmingDelete
-                            ? <div role="alert">
-                                <p>Really delete {characterInfo.name}? This can't be undone.</p>
-                                <button className="delete-character-button confirm" onClick={deleteCharacter}>Yes, delete</button>
-                                <button className="cancel-delete-button" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+                <div className="col-12 col-lg-7">
+                    {/* BLOCK CONTAINING ALL CHARACTER STATS */}
+                    <div className="info-box rounded py-3 mb-3">
+                        <CharacterStatsBlock
+                            stats={characterInfo.stats}
+                            speed={characterInfo.speed}
+                            initiative={characterInfo.initiative}
+                            proficiency={characterInfo.proficiency}
+                            skills={characterInfo.skills}
+                        />
+                    </div>
+                    <div className="row g-3">
+                        {/* BLOCK CONTAINING ALL CHARACTER SKILLS */}
+                        <div className="col-12 col-md-7">
+                            <div className="info-box rounded h-100">
+                                <h3>SKILLS</h3>
+                                <SkillsTable skillList={characterInfo.skills} stats={characterInfo.stats} proficiency={characterInfo.proficiency}></SkillsTable>
                             </div>
-                            : <button className="delete-character-button" onClick={() => setConfirmingDelete(true)}>Delete character</button>
-                    }
-                    {deleteError ? <p role="status">{deleteError}</p> : ""}
+                        </div>
+                        {/* BLOCK CONTAINING ALL CONSUMABLES */}
+                        <div className="col-12 col-md-5">
+                            <div className="info-box rounded h-100">
+                                <ConsumablesTable consumables={characterInfo.consumables} character_id={characterInfo.id}></ConsumablesTable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* BLOCK CONTAINING ALL DICE, SAVE AND DELETE */}
+                <div className="col-12 col-lg-2">
+                    <div className="info-box rounded p-1 mb-3">
+                        <DiceBar />
+                    </div>
+                    <div className="info-box rounded p-1 mb-3">
+                        <button className="character-info-box save-button" onClick={saveCharacter}>Save Character</button>
+                        {saveMessage ? <p className="text-center m-1" role="status">{saveMessage}</p> : ""}
+                    </div>
+                    {/* DELETE, with an inline confirmation step */}
+                    <div className="mb-3 text-center">
+                        {
+                            confirmingDelete
+                                ? <div role="alert">
+                                    <p>Really delete {characterInfo.name}? This can&rsquo;t be undone.</p>
+                                    <button className="delete-character-button confirm" onClick={deleteCharacter}>Yes, delete</button>
+                                    <button className="cancel-delete-button" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+                                </div>
+                                : <button className="delete-character-button" onClick={() => setConfirmingDelete(true)}>Delete character</button>
+                        }
+                        {deleteError ? <p role="status">{deleteError}</p> : ""}
+                    </div>
                 </div>
             </div>
         </div>

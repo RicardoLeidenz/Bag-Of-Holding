@@ -47,3 +47,66 @@ body {
 }
 
 /* Another color we might use: #D9D9D9 (gray background on color pallette slide on Figma design) */
+
+/* SHARED: selector tabs, option grids and option buttons (character selection and creator) */
+.input-selector {
+  display: inline-block;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.9rem;
+  margin: 0.25rem;
+  background-color: whitesmoke;
+  color: #008080;
+  border-style: solid;
+  border-color: #bfb699;
+  border-width: 5px;
+  text-decoration: none;
+}
+.selector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+}
+.grid-selector-input {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  width: min(100%, 48rem);
+  margin: auto;
+  padding: 0 0.75rem;
+}
+.input-selection {
+  width: 100%;
+  min-height: 4.5rem;
+  background-color: whitesmoke;
+  color: #008080;
+  border-style: solid;
+  border-color: #bfb699;
+  border-width: 5px;
+  font-size: large;
+  overflow-wrap: anywhere;
+}
+
+/* Page boxes use smaller margins and borders on phones */
+.page-box {
+  margin: 1.5rem;
+}
+@media (max-width: 575.98px) {
+  .page-box {
+    margin: 0.75rem;
+  }
+  .info-box {
+    border-width: 8px;
+  }
+}
+
+/* NAVBAR */
+.navbar-toggler-custom {
+  background: transparent;
+  border: 2px solid #008080;
+  border-radius: 6px;
+  color: #008080;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
+}

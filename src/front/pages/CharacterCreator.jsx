@@ -87,7 +87,7 @@ export const CharacterCreator = () => {
 
     return (
         <div className="text-center mt-5">
-            <div className="info-box m-5">
+            <div className="info-box page-box">
                 {
                     showAlert && (!characterName || !characterRace || !characterClass || !characterSubClass)
                         ? <div className="alert alert-danger" role="alert">
@@ -96,7 +96,7 @@ export const CharacterCreator = () => {
                         </div>
                         : ""
                 }
-                <div className="m-2">
+                <div className="selector-tabs m-2">
                     {/* Buttons that toggle between character input sections */}
                     <button className="input-selector" onClick={() => setSelectedInput("NAME")}>{characterName ? characterName : "NAME"}</button>
                     <button className="input-selector" onClick={() => setSelectedInput("RACE")}>{characterRace ? characterRace : "RACE"}</button>

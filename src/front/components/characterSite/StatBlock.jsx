@@ -97,7 +97,7 @@ export const StatBlock = (props) => {
                 <div className="stat-block-info ms-1 text-center">
                     <button
                         type="button"
-                        className="proficiency-toggle"
+                        className="proficiency-toggle d-block mx-auto"
                         onClick={toggleSaveProficiency}
                         title={(props.proficient ? "Proficient" : "Not proficient") + " in " + props.name + " saves (click to change)"}
                         aria-label={`${props.name} saving throw: ${props.proficient ? "proficient" : "not proficient"}`}
