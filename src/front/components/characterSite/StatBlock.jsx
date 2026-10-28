@@ -73,7 +73,17 @@ export const StatBlock = (props) => {
 
     return (
         <div className="stat-block-box">
-            <div className="stat-block-info m-1 p-1 mt-2">
+            {/* Save proficiency toggle sits in the header so the CHK and SAV boxes stay aligned */}
+            <div className="stat-block-info stat-block-header m-1 p-1 mt-2">
+                <button
+                    type="button"
+                    className="proficiency-toggle stat-save-toggle"
+                    onClick={toggleSaveProficiency}
+                    title={(props.proficient ? "Proficient" : "Not proficient") + " in " + props.name + " saves (click to change)"}
+                    aria-label={`${props.name} saving throw: ${props.proficient ? "proficient" : "not proficient"}`}
+                >
+                    {props.proficient ? "●" : "○"}
+                </button>
                 <h4>{props.name}</h4>
             </div>
             <div className="stat-block-info m-1 p-1">
@@ -93,15 +103,6 @@ export const StatBlock = (props) => {
                     <h4>{check}</h4>
                 </div>
                 <div className="stat-block-info ms-1 text-center">
-                    <button
-                        type="button"
-                        className="proficiency-toggle d-block mx-auto"
-                        onClick={toggleSaveProficiency}
-                        title={(props.proficient ? "Proficient" : "Not proficient") + " in " + props.name + " saves (click to change)"}
-                        aria-label={`${props.name} saving throw: ${props.proficient ? "proficient" : "not proficient"}`}
-                    >
-                        {props.proficient ? "●" : "○"}
-                    </button>
                     <label>SAV</label>
                     <h4>{saving}</h4>
                 </div>

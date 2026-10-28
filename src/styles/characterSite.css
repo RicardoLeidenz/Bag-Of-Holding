@@ -48,6 +48,19 @@ label {
   text-align: center;
   margin: 5px;
 }
+/* Ability name header: save toggle and name centered together on one row */
+.stat-block-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
+}
+.stat-block-header h4 {
+  margin: 0;
+}
+.stat-save-toggle {
+  margin-right: 0;
+}
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
