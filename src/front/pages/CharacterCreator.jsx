@@ -26,7 +26,7 @@ export const CharacterCreator = () => {
     const [submitError, setSubmitError] = useState("")
 
 
-    const saveCharacter = async (e) => {
+    const saveCharacter = async () => {
         if (characterName && characterRace && characterClass && characterSubClass) {
             // Ignore clicks while saving, so a double click can't create two characters
             if (submittingRef.current) return;

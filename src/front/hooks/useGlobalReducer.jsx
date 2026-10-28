@@ -18,6 +18,8 @@ export function StoreProvider({ children }) {
 }
 
 // Custom hook to access the global state and dispatch function.
+// Kept next to StoreProvider on purpose; the only cost is a full reload instead of fast refresh when this file changes.
+// eslint-disable-next-line react-refresh/only-export-components
 export default function useGlobalReducer() {
     const { dispatch, store } = useContext(StoreContext)
     return { dispatch, store };

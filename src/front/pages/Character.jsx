@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { CharacterInfoBlock } from "../components/characterSite/CharacterInfoBlock.jsx";
 import { CharacterStatsBlock } from "../components/characterSite/CharacterStatsBlock.jsx";
@@ -22,7 +22,7 @@ export const Character = () => {
 
     let characterInfo = store.characterInfo
 
-    const saveCharacter = async (e) => {
+    const saveCharacter = async () => {
         setSaveState({ kind: "saving", text: "Saving..." });
         const { ok, data } = await apiCall("api/character", {
             method: "PUT",
@@ -59,7 +59,7 @@ export const Character = () => {
             }
         };
         loadCharacter();
-    }, [id, loadAttempt])
+    }, [id, loadAttempt, dispatch])
 
     if (status === "not_found" || status === "error") {
         return (
