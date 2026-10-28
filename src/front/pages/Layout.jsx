@@ -47,24 +47,7 @@ export const Layout = () => {
                 }
             )
     }
-    // Fecth all Subclasses and save them to store.js
-    const getSubClasses = (url) => {
-        fetch(url)
-            .then(
-                (allSubClasses) => {
-                    return allSubClasses.json()
-                }
-            )
-            .then(
-                (data) => {
-                    dispatch({
-                        type: "set_subclasses",
-                        payload: data.results
-                    });
-                }
-            )
-    }
-    // Fecth all Subclasses and save them to store.js
+    // Fetch all Spells and save them to store.js
     const getSpells = (url) => {
         fetch(url)
             .then(
@@ -85,7 +68,6 @@ export const Layout = () => {
     useEffect(() => {
         getRaces(store.apiURL + "/races");
         getClasses(store.apiURL + "/classes");
-        getSubClasses(store.apiURL + "/subclasses");
         getSpells(store.apiURL + "/spells");
     }, [])
 

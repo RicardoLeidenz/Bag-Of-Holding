@@ -1,22 +1,7 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
-import { useState } from "react";
+import { CharacterNumberInput } from "./CharacterNumberInput";
 export const CharacterInfoBlock = (props) => {
-    const { store, dispatch } = useGlobalReducer();
-    const [level, setLevel] = useState(props.level);
-    const [hp, setHp] = useState(props.hp);
-    const [ac, setAc] = useState(props.ac);
-    const [hitDice, setHitDice] = useState(props.hitDice);
-    const updateInfo = () => {
-        dispatch({
-            type: "update_info",
-            payload: {
-                level: parseInt(level),
-                hp: parseInt(hp),
-                ac: parseInt(ac),
-                hitDice: hitDice
-            },
-        });
-    }
+    const { dispatch } = useGlobalReducer();
     return (
         //  ALL THIS INFORMATION IS SUPPOSED TO BE SELECTED USING THE DND API WITH ALL CHARACTER OPTIONS
         <div>
@@ -38,19 +23,7 @@ export const CharacterInfoBlock = (props) => {
             {/* CHARACTER LEVEL */}
             <div className="character-info-box m-3">
                 <label htmlFor="level">LEVEL</label>
-                <input
-                    id="level"
-                    type="number"
-                    className="character-info-input no-spinner"
-                    onChange={e => setLevel(e.target.value)}
-                    onKeyDown={e => {
-                        if (e.key == "Enter") {
-                            updateInfo();
-                        }
-                    }
-                    }
-                    value={level}
-                />
+                <CharacterNumberInput id="level" field="level" value={props.level} min={1} max={20} className="character-info-input no-spinner" />
             </div>
 
             {/* CHARACTER CLASS */}
@@ -68,35 +41,11 @@ export const CharacterInfoBlock = (props) => {
             <div className="d-flex">
                 <div className="character-info-box mx-3 p-2 w-25">
                     <label htmlFor="hp">HP</label>
-                    <input
-                        id="hp"
-                        type="number"
-                        className="character-info-input no-spinner"
-                        onChange={e => setHp(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key == "Enter") {
-                                updateInfo();
-                            }
-                        }
-                        }
-                        value={hp}
-                    />
+                    <CharacterNumberInput id="hp" field="hp" value={props.hp} min={0} max={9999} className="character-info-input no-spinner" />
                 </div>
                 <div className="character-info-box mx-3 p-2 w-25">
                     <label htmlFor="ac">AC</label>
-                    <input
-                        id="ac"
-                        type="number"
-                        className="character-info-input no-spinner"
-                        onChange={e => setAc(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key == "Enter") {
-                                updateInfo();
-                            }
-                        }
-                        }
-                        value={ac}
-                    />
+                    <CharacterNumberInput id="ac" field="ac" value={props.ac} min={0} max={99} className="character-info-input no-spinner" />
                 </div>
                 <div className="character-info-box mx-3 p-2 w-25">
                     <label htmlFor="hitDice">HIT DICE</label>
@@ -104,14 +53,9 @@ export const CharacterInfoBlock = (props) => {
                         id="hitDice"
                         type="text"
                         className="character-info-input"
-                        onChange={e => setHitDice(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key == "Enter") {
-                                updateInfo();
-                            }
-                        }
-                        }
-                        value={hitDice}
+                        maxLength={5}
+                        onChange={e => dispatch({ type: "update_character_fields", payload: { hitDice: e.target.value } })}
+                        value={props.hitDice}
                     />
                 </div>
             </div>

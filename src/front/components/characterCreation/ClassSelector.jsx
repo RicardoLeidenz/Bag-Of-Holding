@@ -1,7 +1,7 @@
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 
-export const ClassSelector = ({ setCharacterClass }) => {
-    const { store, dispatch } = useGlobalReducer()
+export const ClassSelector = ({ onSelectClass }) => {
+    const { store } = useGlobalReducer()
     return (
         <div>
             <label className="input-selector mt-3" htmlFor="name">SELECT A CLASS</label>
@@ -11,7 +11,7 @@ export const ClassSelector = ({ setCharacterClass }) => {
                         ? store.classes.map((characterClass, index) => {
                             return (
                                 <div key={index}>
-                                    <button className="input-selection" onClick={() => setCharacterClass(characterClass.name)}>{characterClass.name}</button>
+                                    <button className="input-selection" onClick={() => onSelectClass(characterClass)}>{characterClass.name}</button>
                                 </div>
                             )
                         })

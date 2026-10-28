@@ -1,37 +1,28 @@
-import { number } from "prop-types";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
 import { useState } from "react";
 import { apiFetch } from "../../api.js";
+import { parseWholeNumber } from "../../rules.js";
 export const ConsumablesTable = (props) => {
-    const { store, dispatch } = useGlobalReducer();
-    const [consumables, setConsumables] = useState(props.consumables)
+    const { dispatch } = useGlobalReducer();
+    const [consumables, setConsumables] = useState(props.consumables || [])
     const [newConsumable, setNewConsumable] = useState("")
+    // Amounts being typed, by consumable id; saved when the input loses focus
+    const [drafts, setDrafts] = useState({})
 
-    const updateConsumable = (index, newAmount, id) => {
-        setConsumables(prevConsumables => {
-            // create a shallow copy of the array
-            const updated = [...prevConsumables];
-            // If the element being updated is supposed to be the last (Just added)
-            if (index == consumables.length) {
-                // Check if empty return the same array
-                if (newConsumable == "")
-                    return updated;
-                // Else, add new element
-                updated[index] = { name: newConsumable, amount: newAmount };
-                saveConsumable(newConsumable);
-            }
-            // If the element being updated is already in the list
-            else {
-                // Simply update it
-                updated[index] = { ...updated[index], amount: newAmount };
-                updateBackend(newAmount, id)
-            }
-            return updated;
+    // Keep this table and the store's character in sync
+    const setList = (updated) => {
+        setConsumables(updated);
+        dispatch({
+            type: "update_consumables",
+            payload: {
+                consumables: updated
+            },
         });
-        updateConsumablesList();
     }
 
-    const saveConsumable = async (name) => {
+    const addConsumable = async () => {
+        const name = newConsumable.trim();
+        if (name === "") return;
         const response = await apiFetch("api/consumable", {
             method: "POST",
             body: JSON.stringify({
@@ -39,62 +30,67 @@ export const ConsumablesTable = (props) => {
                 "character_id": props.character_id
             }),
         });
-        console.log(response);
         const data = await response.json();
-        console.log(data);
+        if (!response.ok) {
+            alert(data.error || "Could not add consumable");
+            return;
+        }
+        // Use the consumable the server created, so it has its real id
+        setList([...consumables, data["Consumable Created"]]);
     };
 
-    const updateBackend = async (amount, id) => {
+    const saveAmount = async (consumable) => {
+        const text = drafts[consumable.id];
+        setDrafts(({ [consumable.id]: _, ...rest }) => rest);
+        const amount = parseWholeNumber(text ?? "");
+        if (amount === null || amount < 0 || amount > 9999 || amount === consumable.amount) return;
+
         const response = await apiFetch("api/consumable", {
             method: "PUT",
             body: JSON.stringify({
-                "id": id,
+                "id": consumable.id,
                 "amount": amount
             }),
         });
-        console.log(response);
         const data = await response.json();
-        console.log(data);
+        if (!response.ok) {
+            alert(data.error || "Could not save amount");
+            return;
+        }
+        setList(consumables.map(c => c.id === consumable.id ? data["Consumable Changed"] : c));
     };
-
-    const updateConsumablesList = () => {
-        dispatch({
-            type: "update_consumables",
-            payload: {
-                consumables: consumables
-            },
-        });
-    }
 
     return (
         <div className="d-flex">
             <table className="m-2">
                 <thead>
-                    <th>Consumable</th>
-                    <th>Ammount</th>
+                    <tr>
+                        <th>Consumable</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {
-                        // Simply maps through an array of Consumables and lists the name and ammount left
-                        consumables
-                            ? consumables.map((consumable, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <h5 className="float-start">
-                                            <strong>{consumable.name}</strong>
-                                        </h5>
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="number"
-                                            className="consumableCount"
-                                            value={consumable.amount}
-                                            onChange={(e) => updateConsumable(index, parseInt(e.target.value), consumable.id,)}
-                                        />
-                                    </td>
-                                </tr>
-                            ))
-                            : ""
+                        // Simply maps through an array of Consumables and lists the name and amount left
+                        consumables.map((consumable) => (
+                            <tr key={consumable.id}>
+                                <td>
+                                    <h5 className="float-start">
+                                        <strong>{consumable.name}</strong>
+                                    </h5>
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="consumableCount"
+                                        value={drafts[consumable.id] ?? consumable.amount}
+                                        onChange={(e) => setDrafts({ ...drafts, [consumable.id]: e.target.value })}
+                                        onBlur={() => saveAmount(consumable)}
+                                    />
+                                </td>
+                            </tr>
+                        ))
                     }
                 </tbody>
             </table>
@@ -118,11 +114,11 @@ export const ConsumablesTable = (props) => {
                         <div className="modal-body">
                             <label htmlFor="consumableName">Name your consumable</label>
                             {/* NEW CONSUMABLE NAME INPUT */}
-                            <input className="new-consumable-input" type="text" id="consumableName" name="name" onChange={e => setNewConsumable(e.target.value)} value={newConsumable} />
+                            <input className="new-consumable-input" type="text" id="consumableName" name="name" maxLength={25} onChange={e => setNewConsumable(e.target.value)} value={newConsumable} />
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="close-modal-btn" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="addConsumableButton" onClick={() => updateConsumable(consumables.length, 0)} data-bs-dismiss="modal">Save</button>
+                            <button type="button" className="addConsumableButton" onClick={addConsumable} data-bs-dismiss="modal">Save</button>
                         </div>
                     </div>
                 </div>

@@ -15,6 +15,7 @@ export const CharacterCreator = () => {
     const [characterRace, setCharacterRace] = useState("")
     const [characterClass, setCharacterClass] = useState("")
     const [characterSubClass, setCharacterSubClass] = useState("")
+    const [subclasses, setSubclasses] = useState([])
     const navigate = useNavigate();
     const [showAlert, setsShowAlert] = useState(false)
 
@@ -46,6 +47,16 @@ export const CharacterCreator = () => {
         }
     };
 
+    // Choosing a class loads its subclasses and clears a subclass picked for another class
+    const selectClass = async (chosenClass) => {
+        setCharacterClass(chosenClass.name);
+        setCharacterSubClass("");
+        setSubclasses([]);
+        const response = await fetch(store.apiURL + "/classes/" + chosenClass.index + "/subclasses");
+        const data = await response.json();
+        setSubclasses(data.results);
+    }
+
     //Toggles between sections for character creation
     const inputSelection = () => {
         switch (selectedInput) {
@@ -62,12 +73,12 @@ export const CharacterCreator = () => {
             //A Map of all available classes
             case "CLASS":
                 return (
-                    <ClassSelector setCharacterClass={setCharacterClass} />
+                    <ClassSelector onSelectClass={selectClass} />
                 )
             //A Map of all available subclasses
             case "SUBCLASS":
                 return (
-                    <SubclassSelector setCharacterSubClass={setCharacterSubClass} />
+                    <SubclassSelector subclasses={subclasses} characterClass={characterClass} setCharacterSubClass={setCharacterSubClass} />
                 )
             default:
                 return ""

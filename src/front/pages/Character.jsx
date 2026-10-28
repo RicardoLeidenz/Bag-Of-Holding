@@ -13,17 +13,22 @@ export const Character = () => {
     // The character id comes from the URL (/character/:id), so a page refresh can reload it
     const { id } = useParams();
     const [status, setStatus] = useState("loading") // loading | ready | not_found | error
+    const [saveMessage, setSaveMessage] = useState("")
 
     let characterInfo = store.characterInfo
 
     const saveCharacter = async (e) => {
-        const response = await apiFetch("api/character", {
-            method: "PUT",
-            body: JSON.stringify(characterInfo),
-        });
-        console.log(response);
-        const data = await response.json();
-        console.log(data);
+        setSaveMessage("Saving...");
+        try {
+            const response = await apiFetch("api/character", {
+                method: "PUT",
+                body: JSON.stringify(characterInfo),
+            });
+            const data = await response.json();
+            setSaveMessage(response.ok ? "Saved!" : (data.error || "Could not save"));
+        } catch (error) {
+            setSaveMessage("Could not reach the server");
+        }
     };
 
     // Load the character from the API whenever the id in the URL changes
@@ -84,8 +89,7 @@ export const Character = () => {
                         speed={characterInfo.speed}
                         initiative={characterInfo.initiative}
                         proficiency={characterInfo.proficiency}
-                        user_id={characterInfo.user_id}
-                        id={characterInfo.id}
+                        skills={characterInfo.skills}
                     />
                 </div>
                 <div className="d-flex">
@@ -107,6 +111,7 @@ export const Character = () => {
                 </div>
                 <div className="info-box rounded m-4 p-1">
                     <button className="character-info-box" onClick={saveCharacter}>Save Character</button>
+                    {saveMessage ? <p className="text-center m-1" role="status">{saveMessage}</p> : ""}
                 </div>
             </div>
         </div>

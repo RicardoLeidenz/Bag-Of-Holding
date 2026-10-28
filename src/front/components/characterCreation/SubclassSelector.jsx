@@ -1,19 +1,19 @@
-import useGlobalReducer from "../../hooks/useGlobalReducer.jsx";
-
-export const SubclassSelector = ({ setCharacterSubClass }) => {
-    const { store, dispatch } = useGlobalReducer()
+// Shows the subclasses of the chosen class (loaded by CharacterCreator)
+export const SubclassSelector = ({ subclasses, characterClass, setCharacterSubClass }) => {
     return (
         <div>
-            <label className="input-selector mt-3" htmlFor="name">SELECT A SUBCLASS</label>
+            <label className="input-selector mt-3">SELECT A SUBCLASS</label>
             <div className="grid-selector-input mt-3">
                 {
-                    store.subclasses.map((subClass, index) => {
-                        return (
-                            <div key={index}>
-                                <button className="input-selection" onClick={() => setCharacterSubClass(subClass.name)}>{subClass.name}</button>
-                            </div>
-                        )
-                    })
+                    !characterClass
+                        ? <p className="text-white">Choose a class first</p>
+                        : subclasses.map((subClass) => {
+                            return (
+                                <div key={subClass.index}>
+                                    <button className="input-selection" onClick={() => setCharacterSubClass(subClass.name)}>{subClass.name}</button>
+                                </div>
+                            )
+                        })
                 }
             </div>
         </div>

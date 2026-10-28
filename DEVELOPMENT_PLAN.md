@@ -36,7 +36,7 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 
 ## Priority 1 — Critical (required to function safely)
 
-**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ · 1.5 ✅ · 1.6 ✅ (51 pytest tests + a 26-step headless-Chrome flow, part of 1.9) · from 1.7: Hit Dice prop fixed, sheet remounts per character
+**Progress:** 1.1 ✅ · 1.2 ✅ · 1.3 ✅ · 1.4 ✅ · 1.5 ✅ · 1.6 ✅ · 1.7 ✅ (51 pytest tests + 50 headless-Chrome checks, part of 1.9)
 
 | # | Task | Why | Files | Size | Verify |
 |---|---|---|---|---|---|
@@ -50,14 +50,15 @@ Bag of Holding is a D&D 5e character-sheet app (React 18 + Vite frontend, Flask 
 | 1.8 | **Migrations and commands:** confirm the squashed migration builds a fresh SQLite and Postgres DB; fix `insert-test-users` (hash passwords) | Deploy runs `flask db upgrade` | `migrations/`, `src/api/commands.py` | S | `pipenv run upgrade` on an empty DB |
 | 1.9 | **Backend test suite:** pytest + Flask test client on in-memory SQLite, `conftest.py` fixtures, a `pipenv run test` script. Covers auth, character CRUD, ownership, stats, consumables | Safety net for every later change | `tests/` (new), `Pipfile` | M | `pipenv run test` passes |
 
-**Task 1.7 bug list:**
-- `SkillsTable.jsx:47` uses the wrong ability (`pair[0]` should be `pair[1]`).
+**Task 1.7 bug list** (all reproduced in headless Chrome before fixing, re-checked after):
+- ~~`SkillsTable.jsx:47` uses the wrong ability (`pair[0]` should be `pair[1]`).~~ Fixed.
 - ~~`Character.jsx:43` passes HP into the Hit Dice field.~~ Fixed early in 1.4 (validation would otherwise reject saves).
-- The `state` → `store` typos in `store.js`.
+- ~~The `state` → `store` typos in `store.js`.~~ Fixed.
 - ~~Props copied into local state go stale; fix by keying components on the character id.~~ Done in 1.6 (sheet keyed on character id, only rendered once loaded).
-- `ConsumablesTable` makes POST calls inside a setState updater and drops the new consumable's id.
-- `StatBlock` saves on every keystroke; switch to saving on blur, with NaN guards.
-- The subclass list isn't filtered by class; use `/classes/{index}/subclasses`.
+- ~~`ConsumablesTable` makes POST calls inside a setState updater and drops the new consumable's id.~~ Fixed (was creating 2 rows per add in dev).
+- ~~`StatBlock` saves on every keystroke; switch to saving on blur, with NaN guards.~~ Fixed.
+- ~~The subclass list isn't filtered by class; use `/classes/{index}/subclasses`.~~ Fixed.
+- Found during 1.7, also fixed: sheet edits were lost unless Enter was pressed before Save; Passive Perception always added proficiency; saving throws concatenated text ("3"+"2"); Save gave no feedback; `<thead>` markup invalid.
 
 ## Priority 2 — Important (also required for the public launch)
 

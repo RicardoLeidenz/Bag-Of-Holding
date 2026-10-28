@@ -5,7 +5,6 @@ export const initialStore = () => {
     characterInfo: {},
     races: [],
     classes: [],
-    subclasses: [],
     spells: [],
     user: null,
     inventoryList: [],
@@ -34,12 +33,6 @@ export default function storeReducer(store, action = {}) {
         classes: action.payload,
       };
 
-    case "set_subclasses":
-      return {
-        ...store,
-        subclasses: action.payload,
-      };
-
     case "set_spells":
       return {
         ...store,
@@ -64,83 +57,53 @@ export default function storeReducer(store, action = {}) {
         characterInfo: action.payload,
       };
 
-    case "save_character_info":
-      const { name, race, characterClass, subclass } = action.payload;
+    // Merges edited fields (e.g. { hp: 25 }) into the current character
+    case "update_character_fields":
       return {
         ...store,
         characterInfo: {
           ...store.characterInfo,
-          name: name,
-          race: race,
-          characterClass: characterClass,
-          subclass: subclass,
-        },
-      };
-
-    case "save_attributes":
-      const { speed, initiative, proficiency } = action.payload;
-      return {
-        ...store,
-        characterInfo: {
-          ...store.characterInfo,
-          speed: speed,
-          initiative: initiative,
-          proficiency: proficiency,
+          ...action.payload,
         },
       };
 
     case "update_consumables":
-      const { consumables } = action.payload;
       return {
         ...store,
         characterInfo: {
           ...store.characterInfo,
-          consumables: consumables,
+          consumables: action.payload.consumables,
         },
       };
 
     case "update_stats":
-      const { stats } = action.payload;
       return {
         ...store,
         characterInfo: {
           ...store.characterInfo,
-          stats: stats,
-        },
-      };
-
-    case "update_info":
-      const { level, hp, ac, hitDice } = action.payload;
-      return {
-        ...store,
-        characterInfo: {
-          ...store.characterInfo,
-          level: level,
-          hp: hp,
-          ac: ac,
-          hitDice: hitDice,
+          stats: action.payload.stats,
         },
       };
 
     case "set_inventory":
-      return { ...state, inventoryList: action.payload };
+      return { ...store, inventoryList: action.payload };
 
     case "set_bag_items":
-      return { ...state, bagItems: action.payload };
+      return { ...store, bagItems: action.payload };
 
     case "add_bag_item":
-      return { ...state, bagItems: [...state.bagItems, action.payload] };
+      return { ...store, bagItems: [...store.bagItems, action.payload] };
 
     case "remove_bag_item":
       return {
-        ...state,
-        bagItems: state.bagItems.filter((item) => item.id !== action.payload),
+        ...store,
+        bagItems: store.bagItems.filter((item) => item.id !== action.payload),
       };
 
     case "update_bag_item":
       return {
-        ...state,
-        bagItems: state.bagItems.map((item) =>
+        ...store,
+        bagItems: store.bagItems.map((item) =>
           item.id === action.payload.id ? { ...item, ...action.payload } : item
         ),
       };
