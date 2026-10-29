@@ -2,8 +2,6 @@
 
 # Bag of Holding
 
-[![CI](https://github.com/RicardoLeidenz/Bag-Of-Holding/actions/workflows/ci.yml/badge.svg)](https://github.com/RicardoLeidenz/Bag-Of-Holding/actions/workflows/ci.yml)
-
 **Bag of Holding** is a Dungeons and Dragons character tracking application designed to simplify the player experience. It allows users to manage their characters, track spells, monitor consumables, and view detailed stats in a single, organized interface.  
 
 This project was developed as the final project for the Full Stack Software Engineer certification at 4Geeks Academy.
