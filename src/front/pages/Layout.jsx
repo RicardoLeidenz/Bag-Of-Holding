@@ -14,30 +14,29 @@ export const Layout = () => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
-    // Fetch races, classes and spells from dnd5eapi.co and save them to store.js
-    const loadGameData = async () => {
-        dispatch({ type: "set_game_data_status", payload: "loading" });
-        try {
-            const [races, classes, spells] = await Promise.all(
-                ["races", "classes", "spells"].map(async (list) => {
-                    const response = await fetch(store.apiURL + "/" + list);
-                    if (!response.ok) throw new Error(list + ": status " + response.status);
-                    return (await response.json()).results;
-                })
-            );
-            dispatch({ type: "set_races", payload: races });
-            dispatch({ type: "set_classes", payload: classes });
-            dispatch({ type: "set_spells", payload: spells });
-            dispatch({ type: "set_game_data_status", payload: "ready" });
-        } catch (error) {
-            dispatch({ type: "set_game_data_status", payload: "error" });
-        }
-    }
-
     // Load the reference data upon mount
     useEffect(() => {
+        // Fetch races, classes and spells from dnd5eapi.co and save them to store.js
+        const loadGameData = async () => {
+            dispatch({ type: "set_game_data_status", payload: "loading" });
+            try {
+                const [races, classes, spells] = await Promise.all(
+                    ["races", "classes", "spells"].map(async (list) => {
+                        const response = await fetch(store.apiURL + "/" + list);
+                        if (!response.ok) throw new Error(list + ": status " + response.status);
+                        return (await response.json()).results;
+                    })
+                );
+                dispatch({ type: "set_races", payload: races });
+                dispatch({ type: "set_classes", payload: classes });
+                dispatch({ type: "set_spells", payload: spells });
+                dispatch({ type: "set_game_data_status", payload: "ready" });
+            } catch (error) {
+                dispatch({ type: "set_game_data_status", payload: "error" });
+            }
+        }
         loadGameData();
-    }, [])
+    }, [store.apiURL, dispatch])
 
     // When the server rejects our login token (expired or invalid), log out and go to the login page
     useEffect(() => {
@@ -47,7 +46,7 @@ export const Layout = () => {
         };
         window.addEventListener(SESSION_EXPIRED_EVENT, handleExpired);
         return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleExpired);
-    }, [])
+    }, [dispatch, navigate])
     return (
         <ScrollToTop>
             <Navbar />

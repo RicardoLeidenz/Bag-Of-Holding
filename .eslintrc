@@ -40,7 +40,12 @@
         "allowConstantExport": true
       }
     ],
-    "no-unused-vars": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "ignoreRestSiblings": true
+      }
+    ],
     "no-console": "warn"
   },
   "overrides": [
@@ -50,6 +55,14 @@
       ],
       "env": {
         "node": true
+      }
+    },
+    {
+      "files": [
+        "src/front/main.jsx"
+      ],
+      "rules": {
+        "react-refresh/only-export-components": "off"
       }
     }
   ]

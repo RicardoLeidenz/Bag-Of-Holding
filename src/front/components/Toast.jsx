@@ -11,7 +11,7 @@ export const Toast = () => {
         if (!notice) return;
         const timer = setTimeout(() => dispatch({ type: "hide_notice", payload: notice.id }), 6000);
         return () => clearTimeout(timer);
-    }, [notice?.id]);
+    }, [notice, dispatch]);
 
     return (
         // The live region is always present so screen readers announce new messages

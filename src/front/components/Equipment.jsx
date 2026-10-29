@@ -1,8 +1,7 @@
-import React from "react"
 import { ItemBlock } from "./ItemBlock.jsx"
 import { inventory } from "./item.js"
 
-export const EquipmentDisplay = (props) => {
+export const EquipmentDisplay = () => {
     let details = inventory
 
     const weaponAndTool = details.filter(
