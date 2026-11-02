@@ -1,11 +1,11 @@
 .input-field {
   width: min(100%, 20rem);
   margin-inline: 5px;
-  background-color: var(--boh-surface);
-  color: var(--boh-teal-text);
-  border-style: solid;
-  border-color: var(--boh-plum);
-  border-width: 5px;
+  background-color: var(--boh-parchment-light);
+  color: var(--boh-ink);
+  border: 3px solid var(--boh-wood-dark);
+  box-shadow: inset 0 3px 0 rgba(43, 20, 28, 0.12);
+  padding: 0 0.5rem;
   min-height: 2.75rem;
   font-size: x-large;
 }

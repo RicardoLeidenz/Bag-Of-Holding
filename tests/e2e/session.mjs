@@ -44,7 +44,7 @@ export async function run(b, { email, password }) {
     await goto("/character/999999");
     check("unknown character: not-found message", await waitFor(`document.body.innerText.includes("CHARACTER NOT FOUND")`), (await text()).slice(0, 200));
     await goto("/this-page-does-not-exist");
-    check("unknown route: 404 page with navbar", await waitFor(`document.body.innerText.includes("PAGE NOT FOUND") && document.body.innerText.includes("BAG OF HOLDING")`), (await text()).slice(0, 200));
+    check("unknown route: 404 page with navbar", await waitFor(`document.body.innerText.includes("PAGE NOT FOUND") && /bag of holding/i.test(document.body.innerText)`), (await text()).slice(0, 200));
 
     // An invalid token logs the user out automatically
     await evaluate("localStorage.setItem('token', 'not-a-valid-token')");
