@@ -1,32 +1,30 @@
-/* Login/Signup specific */
+/* Login/Signup specific: a parchment notice in a wooden frame */
 .form-container {
-  position: relative;               
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 15px;  
-  background-color: var(--boh-beige);
-  border-style: solid;
-  border-color: var(--boh-beige);
-  border-width: 20px;
-  padding-top: 70px;
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  border: 16px solid var(--boh-wood);
+  border-image: var(--boh-wood-frame);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55), 0 0 60px rgba(242, 154, 46, 0.12);
+  padding: 70px 0 24px 0;
   /* 400px on larger screens, narrower on phones so it never overflows */
   width: min(400px, calc(100% - 1.5rem));
   min-height: 400px;
-  margin: 1.5rem auto 0 auto;
+  margin: 1.5rem auto 2rem auto;
 }
 
 .login-label {
   white-space: nowrap;
   position: absolute;
-  top: 10px;              
-  left: 50%;              
-  transform: translateX(-50%); 
-  color: var(--boh-teal-text);         
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--boh-burgundy);
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.75rem;
 }
 
 .form-row {
@@ -38,33 +36,36 @@
 }
 
 .form-row label {
-    color: var(--boh-surface);
+    color: var(--boh-parchment);
     /* fits the widest label ("Password:") in the pixel font */
     flex: 0 0 auto;
     min-width: 100px;
     margin-right: 10px;
     text-align: right;
-    background-color: var(--boh-red);
+    background-color: var(--boh-burgundy);
+    border: 2px solid var(--boh-wood-dark);
+    border-radius: 2px;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.25);
     font-weight: bold;
-    border-radius: 15px;
     padding: 5px 10px;
     font-size: larger;
 }
-
-
 
 .form-row input {
     flex: 1;
     min-width: 0;
     min-height: 2.5rem;
     padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 2px;
+    border: 2px solid var(--boh-wood);
+    background-color: var(--boh-parchment-light);
+    color: var(--boh-ink);
+    box-shadow: inset 0 3px 0 rgba(43, 20, 28, 0.12);
 }
 
 .submit-button {
-    display: block;              
-    margin: 20px auto 0 auto;    
+    display: block;
+    margin: 20px auto 0 auto;
     padding: 10px 20px;
     margin-top: 50px;
     cursor: pointer;
@@ -81,17 +82,20 @@
 }
 
 .mode-switch button {
-  background-color: var(--boh-beige);
-  color: var(--boh-teal-text);
-  border: none;
+  background-color: transparent;
+  color: var(--boh-burgundy);
+  border: 2px solid transparent;
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius: 2px;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .mode-switch button:hover {
-  background-color: var(--boh-beige-dark);
+  background-color: var(--boh-parchment-dark);
+  border-color: var(--boh-wood);
 }
 
 
@@ -102,5 +106,5 @@
 .password-hint {
     margin: -8px 0 0 0;
     font-size: 0.9rem;
-    color: var(--boh-plum);
+    color: var(--boh-ink);
 }

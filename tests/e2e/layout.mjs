@@ -7,8 +7,12 @@ export async function run(b, { token }) {
     const { check, goto, waitFor, evaluate, send, sleep } = b;
     const character = await createCharacter(token, "Layout");
     const setWidth = (width, mobile) => send("Emulation.setDeviceMetricsOverride", { width, height: 800, deviceScaleFactor: 1, mobile });
-    // How far the rightmost element sticks out past the screen (0 = no sideways scrolling)
-    const overflow = () => evaluate(`Math.round(Math.max(...[...document.querySelectorAll("body *")].map(e => e.getBoundingClientRect().right)) - document.documentElement.clientWidth)`);
+    // How far the rightmost element sticks out past the screen (0 = no sideways scrolling), and which element it is
+    const overflow = async () => JSON.parse(await evaluate(`(() => {
+        const widest = [...document.querySelectorAll("body *")].reduce((a, e) => e.getBoundingClientRect().right > a.getBoundingClientRect().right ? e : a, document.body);
+        const extra = Math.round(widest.getBoundingClientRect().right - document.documentElement.clientWidth);
+        return JSON.stringify({ extra, element: widest.tagName.toLowerCase() + (widest.className ? "." + String(widest.className).trim().split(/\\s+/).join(".") : "") + ' "' + (widest.innerText || "").trim().slice(0, 30).replace(/\\s+/g, " ") + '"', viewport: document.documentElement.clientWidth });
+    })()`));
     const pages = [
         ["login", "/", "input[name=email]", false],
         ["character selection", "/characterselection", ".character-list", true],
@@ -24,8 +28,8 @@ export async function run(b, { token }) {
             await goto(path);
             await waitFor(`!!document.querySelector("${ready}")`);
             await sleep(300);
-            const extra = await overflow();
-            check(`${device}: ${name} fits the screen`, extra <= 0, `${extra}px too wide`);
+            const { extra, element, viewport } = await overflow();
+            check(`${device}: ${name} fits the screen`, extra <= 0, `${extra}px too wide (${element}, viewport ${viewport}px)`);
             // Text that sticks out of its own box (e.g. a long word in a narrow heading)
             const clipped = await evaluate(`[...document.querySelectorAll("h1, h2, h3, h4, h5, button, label, a, th")]
                 .filter(e => e.offsetParent !== null && e.scrollWidth > e.clientWidth + 1)

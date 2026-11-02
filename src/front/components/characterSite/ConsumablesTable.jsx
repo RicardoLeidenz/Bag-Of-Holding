@@ -8,6 +8,8 @@ export const ConsumablesTable = (props) => {
     const [newConsumable, setNewConsumable] = useState("")
     // Amounts being typed, by consumable id; saved when the input loses focus
     const [drafts, setDrafts] = useState({})
+    // Removing takes two clicks: the first arms the row's button, the second deletes
+    const [confirmingId, setConfirmingId] = useState(null)
 
     // Keep this table and the store's character in sync
     const setList = (updated) => {
@@ -58,6 +60,19 @@ export const ConsumablesTable = (props) => {
         setList(consumables.map(c => c.id === consumable.id ? data["Consumable Changed"] : c));
     };
 
+    const removeConsumable = async (consumable) => {
+        setConfirmingId(null);
+        const { ok, data } = await apiCall("api/consumable", {
+            method: "DELETE",
+            body: JSON.stringify({ "id": consumable.id }),
+        });
+        if (!ok) {
+            dispatch({ type: "show_notice", payload: { kind: "error", text: `Could not remove ${consumable.name}: ${data.error}` } });
+            return;
+        }
+        setList(consumables.filter(c => c.id !== consumable.id));
+    };
+
     return (
         <div className="d-flex align-items-start">
             {
@@ -70,6 +85,7 @@ export const ConsumablesTable = (props) => {
                     <tr>
                         <th>Consumable</th>
                         <th>Amount</th>
+                        <th><span className="visually-hidden">Remove</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,6 +107,17 @@ export const ConsumablesTable = (props) => {
                                         onChange={(e) => setDrafts({ ...drafts, [consumable.id]: e.target.value })}
                                         onBlur={() => saveAmount(consumable)}
                                     />
+                                </td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        className={"remove-consumable-button" + (confirmingId === consumable.id ? " confirm" : "")}
+                                        aria-label={confirmingId === consumable.id ? `Confirm removing ${consumable.name}` : `Remove ${consumable.name}`}
+                                        onClick={() => confirmingId === consumable.id ? removeConsumable(consumable) : setConfirmingId(consumable.id)}
+                                        onBlur={() => setConfirmingId(null)}
+                                    >
+                                        {confirmingId === consumable.id ? "Remove?" : "✕"}
+                                    </button>
                                 </td>
                             </tr>
                         ))

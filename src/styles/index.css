@@ -1,28 +1,42 @@
-/* BRAND (see docs/brand/brand-guide.png) */
+/* BRAND: medieval tavern at night. Burgundy stays the main color; stone, wood,
+   parchment, candlelight and ivy support it. Pixel art lives in public/art (2 CSS px per art pixel). */
 :root {
-  --boh-red: #8B3A3A;           /* Primary Red */
-  --boh-plum: #3A1F2B;          /* Dark Plum */
-  --boh-beige: #C8C1A4;         /* Background Beige */
-  --boh-teal: #008080;          /* Accent Teal */
-  --boh-text: #1A1A1A;          /* Text Primary */
-  --boh-surface: #F3EED9;       /* Surface Light */
-  --boh-red-secondary: #6C3A3F; /* Secondary Red */
-  --boh-teal-light: #5AA6A3;    /* Accent Light */
-  --boh-beige-dark: #B3AB8C;    /* Hover shade of the beige (not in the guide) */
-  /* Not in the guide: darker teals so small text meets WCAG AA contrast (4.5:1).
-     The brand teal above is still used for borders, fills and large elements. */
-  --boh-teal-text: #005959;     /* teal text on beige or surface backgrounds */
-  --boh-teal-button: #006B6B;   /* teal button fill behind light text */
+  --boh-burgundy: #7B2636;        /* Main color: panels, primary buttons, logo */
+  --boh-burgundy-light: #9C3646;  /* hover and highlights */
+  --boh-burgundy-dark: #561A26;   /* pressed, list hover */
+  --boh-night: #17111C;           /* stone wall shadows behind everything */
+  --boh-wood-dark: #1E120C;       /* outlines */
+  --boh-wood: #5C3A24;
+  --boh-wood-light: #865733;
+  --boh-parchment: #F1E2BF;       /* content surfaces */
+  --boh-parchment-light: #FBF3DF; /* text inputs */
+  --boh-parchment-dark: #DCC394;  /* cards that hold parchment boxes */
+  --boh-ink: #2B141C;             /* text on parchment */
+  --boh-candle: #E0A440;          /* brass trim, borders */
+  --boh-candle-light: #F6D27A;    /* text on wood and burgundy */
+  --boh-ivy: #355E2F;             /* accent buttons (save, add) */
+  --boh-ivy-light: #4C7F3A;
 
-  /* Headings / UI titles, labels / buttons / navigation, body text */
-  --font-heading: "Press Start 2P", ui-monospace, monospace;
+  /* Brand sign, headings / labels / buttons / navigation, body text */
+  --font-display: "Jacquard 24", "Pixelify Sans", serif;
+  --font-heading: "Pixelify Sans", ui-monospace, monospace;
   --font-ui: "Pixelify Sans", ui-monospace, monospace;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Pixel bevel shared by buttons: light top edge, dark bottom edge, hard drop shadow */
+  --pixel-bevel: inset 0 3px 0 rgba(255, 255, 255, 0.22), inset 0 -3px 0 rgba(0, 0, 0, 0.28), 0 3px 0 rgba(0, 0, 0, 0.5);
+  --boh-wood-frame: url("/art/frame.svg") 8 round;
+  --boh-parchment-texture: url("/art/parchment.svg") 0 0 / 64px 64px;
 }
 
-/* GENERAL SITE */
+/* GENERAL SITE: stone wall lit by candlelight from above */
 body {
-  background-color: var(--boh-plum);
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(242, 154, 46, 0.22), transparent 70%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    url("/art/stone.svg") 0 0 / 192px 128px,
+    var(--boh-night);
+  background-attachment: fixed, fixed, scroll, scroll;
   font-family: var(--font-body);
 }
 /* Keep the footer at the bottom of the screen on short pages */
@@ -41,13 +55,13 @@ h1, h2, h3,
 .login-label,
 .modal-title {
   font-family: var(--font-heading);
-  font-weight: normal;
-  line-height: 1.5;
-  letter-spacing: 0;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
 }
-h1 { font-size: 1.35rem; }
-h2 { font-size: 1.1rem; }
-h3 { font-size: 1rem; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.2rem; }
 button,
 .btn,
 label,
@@ -62,7 +76,7 @@ td,
   font-family: var(--font-ui);
 }
 
-/* BUTTONS: the guide's pixel style (plum outline, inner bevel, small drop shadow) */
+/* BUTTONS: pixel bevel with a dark wood outline */
 .submit-button,
 .save-button,
 .input-selector,
@@ -71,92 +85,183 @@ td,
 .close-button,
 .close-modal-btn,
 .dice-block {
-  border: 3px solid var(--boh-plum);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35), 0 3px 0 rgba(0, 0, 0, 0.3);
+  border: 3px solid var(--boh-wood-dark);
+  border-radius: 2px;
+  box-shadow: var(--pixel-bevel);
 }
-/* Primary: red */
+button.submit-button:active,
+button.save-button:active,
+button.input-selector:active,
+button.input-selection:active,
+button.addConsumableButton:active,
+button.close-button:active,
+button.close-modal-btn:active,
+button.dice-block:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.25), 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+/* Primary: burgundy */
 .submit-button {
-  background-color: var(--boh-red);
-  color: var(--boh-surface);
+  background-color: var(--boh-burgundy);
+  color: var(--boh-parchment);
 }
-/* Secondary: beige */
+.submit-button:hover {
+  background-color: var(--boh-burgundy-light);
+}
+/* Secondary: parchment */
 .input-selector,
 .input-selection,
 .close-button,
 .close-modal-btn {
-  background-color: var(--boh-beige);
-  color: var(--boh-plum);
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  color: var(--boh-ink);
 }
-.input-selection:hover,
-.input-selector:hover {
-  background-color: var(--boh-surface);
+button.input-selection:hover,
+button.input-selector:hover,
+.close-button:hover,
+.close-modal-btn:hover {
+  background: var(--boh-parchment-light);
 }
-/* Accent: teal */
+/* Accent: ivy green */
 .save-button,
 .addConsumableButton {
-  background-color: var(--boh-teal-button);
-  color: var(--boh-surface);
+  background-color: var(--boh-ivy);
+  color: var(--boh-parchment);
 }
 .save-button:hover,
 .addConsumableButton:hover {
-  background-color: var(--boh-teal);
+  background-color: var(--boh-ivy-light);
 }
 .dice-block {
-  background-color: var(--boh-surface);
-  color: var(--boh-plum);
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  color: var(--boh-burgundy);
+}
+.dice-block:hover {
+  background: var(--boh-parchment-light);
 }
 
-/* HOME: logo, wordmark and tagline above the login form */
+/* HOME: a tavern sign between two candles, above the login form */
 .brand-hero {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin: 2rem auto 0.5rem auto;
+  margin: 2.5rem auto 0.5rem auto;
   padding: 0 1rem;
   text-align: left;
 }
-.brand-hero img {
-  width: 96px;
-  height: 96px;
+.brand-hero .brand-logo {
+  width: 128px;
+  height: 128px;
   image-rendering: pixelated;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.5));
+}
+.hero-candle {
+  width: 36px;
+  height: 72px;
+  image-rendering: pixelated;
+  align-self: flex-end;
+  filter: drop-shadow(0 -6px 14px rgba(242, 154, 46, 0.55));
 }
 .brand-wordmark {
-  color: var(--boh-beige);
-  font-size: 1.6rem;
+  font-family: var(--font-display);
+  font-weight: normal;
+  color: var(--boh-candle-light);
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: 0;
   margin: 0;
+  text-shadow: 3px 3px 0 var(--boh-ink), 0 0 18px rgba(242, 154, 46, 0.45);
 }
 .brand-tagline {
-  color: var(--boh-teal-light);
+  color: var(--boh-parchment-dark);
   font-family: var(--font-ui);
-  letter-spacing: 0.15em;
-  margin: 0.25rem 0 0 0;
+  letter-spacing: 0.2em;
+  margin: 0.5rem 0 0 0;
 }
 @media (max-width: 575.98px) {
-  .brand-hero img { width: 64px; height: 64px; }
-  .brand-wordmark { font-size: 1.1rem; }
-  .brand-tagline { font-size: 0.8rem; }
+  .brand-hero { gap: 0.5rem; }
+  .brand-hero .brand-logo { width: 64px; height: 64px; }
+  .hero-candle { width: 18px; height: 36px; }
+  .brand-wordmark { font-size: 2.25rem; }
+  .brand-tagline { font-size: 0.7rem; letter-spacing: 0.1em; }
+}
+
+/* NAVBAR AND FOOTER: wooden beams with a brass trim */
+.header-primary {
+  background-color: var(--boh-burgundy);
+}
+.header-secondary {
+  background: url("/art/wood.svg") 0 0 / 192px 48px, var(--boh-wood);
+  color: var(--boh-parchment);
+}
+.navbar.header-secondary {
+  /* above the page, so the ivy hangs over it */
+  z-index: 10;
+  border-bottom: 3px solid var(--boh-candle);
+  box-shadow: 0 3px 0 var(--boh-wood-dark), 0 8px 18px rgba(0, 0, 0, 0.5);
+}
+/* Ivy hanging from the beam (decoration only, never blocks clicks) */
+.navbar.header-secondary::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 3px);
+  height: 32px;
+  background: url("/art/ivy.svg") 0 0 / 192px 32px repeat-x;
+  pointer-events: none;
+}
+.footer.header-secondary {
+  border-top: 3px solid var(--boh-candle);
+  box-shadow: 0 -3px 0 var(--boh-wood-dark);
+}
+.navbar .navbar-brand,
+.footer.header-secondary {
+  color: var(--boh-candle-light);
+  text-shadow: 2px 2px 0 var(--boh-wood-dark);
+}
+.navbar .navbar-brand {
+  font-family: var(--font-display);
+  font-weight: normal;
+  font-size: 1.5rem;
+  letter-spacing: 0;
+}
+.navbar .navbar-brand:hover {
+  color: var(--boh-parchment-light);
 }
 .navbar-logo {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   image-rendering: pixelated;
   margin-right: 0.5rem;
   vertical-align: -6px;
 }
-@media (max-width: 575.98px) {
-  .navbar-brand { font-size: 0.8rem; }
+.navbar-button {
+  background-color: transparent;
+  border: 2px solid transparent;
+  border-radius: 2px;
+  color: var(--boh-parchment);
+  font-weight: 600;
+  text-shadow: 2px 2px 0 var(--boh-wood-dark);
 }
-.header-primary {
-  background-color: var(--boh-red);
+.navbar-button:hover {
+  background-color: rgba(224, 164, 64, 0.18);
+  border-color: var(--boh-candle);
+  color: var(--boh-candle-light);
 }
-.header-secondary {
-  background-color: var(--boh-beige);
+.navbar-toggler-custom {
+  background: transparent;
+  border: 2px solid var(--boh-candle);
+  border-radius: 2px;
+  color: var(--boh-candle-light);
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
 }
 
 .accent {
-  color: var(--boh-teal-text);
+  color: var(--boh-burgundy);
 }
 .col {
   text-align: center;
@@ -166,33 +271,13 @@ td,
   text-align: center;
   justify-content: center;
 }
+/* PANELS: burgundy tapestry in a wooden frame with brass corners */
 .info-box {
-  background-color: var(--boh-red);
-  border-style: solid;
-  border-color: var(--boh-beige);
-  border-width: 15px;
+  background: url("/art/tapestry.svg") 0 0 / 32px 32px, var(--boh-burgundy);
+  border: 16px solid var(--boh-wood);
+  border-image: var(--boh-wood-frame);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
 }
-/* Login/Signup specific */
-.form-container {
-  background-color: var(--boh-red);
-  border-style: solid;
-  border-color: var(--boh-beige);
-  border-width: 15px;
-}
-
-.navbar-button {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--boh-teal-text);
-  font-weight: bold;
-}
-
-.navbar-button:hover {
-  background-color: var(--boh-teal);
-  border-color: var(--boh-red);
-}
-
-/* Another color we might use: #D9D9D9 (gray background on color pallette slide on Figma design) */
 
 /* SHARED: selector tabs, option grids and option buttons (character selection and creator) */
 .input-selector {
@@ -220,6 +305,7 @@ td,
   width: 100%;
   min-height: 4.5rem;
   font-size: large;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
@@ -232,19 +318,8 @@ td,
     margin: 0.75rem;
   }
   .info-box {
-    border-width: 8px;
+    border-width: 12px;
   }
-}
-
-/* NAVBAR */
-.navbar-toggler-custom {
-  background: transparent;
-  border: 2px solid var(--boh-teal);
-  border-radius: 6px;
-  color: var(--boh-teal-text);
-  font-size: 1.4rem;
-  line-height: 1;
-  padding: 0.3rem 0.6rem;
 }
 
 /* TOAST: short messages at the bottom of the screen */
@@ -262,16 +337,16 @@ td,
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 3px solid var(--boh-beige);
+  border-radius: 2px;
+  border: 3px solid var(--boh-candle);
   color: white;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px var(--boh-wood-dark), 0 6px 16px rgba(0, 0, 0, 0.5);
 }
 .app-toast.error {
   background-color: #a2272f;
 }
 .app-toast.success {
-  background-color: #1e6b52;
+  background-color: var(--boh-ivy);
 }
 .app-toast-close {
   background: transparent;
@@ -286,20 +361,22 @@ td,
 .inline-message {
   margin: 0.75rem auto 0 auto;
   padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 2px;
   max-width: 24rem;
   font-weight: bold;
 }
 .inline-message.error {
-  background-color: #fbe3e4;
-  color: #8a1c24;
+  background-color: #f7dcdc;
+  color: #7a1622;
+  border: 2px solid #7a1622;
 }
 .inline-message.success {
-  background-color: #dff3ea;
-  color: #1e6b52;
+  background-color: #e1ecd5;
+  color: #2a4a22;
+  border: 2px solid #2a4a22;
 }
 .inline-message.info {
-  color: var(--boh-surface);
+  color: var(--boh-parchment);
 }
 
 /* KEYBOARD FOCUS: gold ring with a dark edge, visible on every background used here */
@@ -307,7 +384,7 @@ td,
 .btn:focus-visible {
   outline: 3px solid #ffd166;
   outline-offset: 1px;
-  box-shadow: 0 0 0 5px var(--boh-plum);
+  box-shadow: 0 0 0 5px var(--boh-ink);
 }
 
 button:disabled {

@@ -92,7 +92,14 @@ jobs:
             sleep 1
           done
           echo "Servers did not start"; cat api.log app.log; exit 1
-      - run: npm run test:e2e
+      - name: Run the browser tests
+        # Failed checks are also shown as annotations on the run summary
+        run: |
+          set +e
+          npm run test:e2e 2>&1 | tee e2e.log
+          status=${PIPESTATUS[0]}
+          grep -E "FAIL|ERROR" e2e.log | head -20 | sed 's/^ */::error::/'
+          exit $status
       - name: Server logs
         if: failure()
         run: cat api.log app.log

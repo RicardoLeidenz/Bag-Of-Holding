@@ -1,18 +1,26 @@
 /* CHARACTER INFO PAGE SPECIFIC */
-.character-info-box {
-  background-color: var(--boh-surface);
-  color: var(--boh-teal-text);
-  border: 5px solid var(--boh-teal);
+/* Parchment boxes with a dark wood outline */
+.character-info-box,
+.stat-block-info,
+.spell-information-box,
+.new-consumable-input {
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  color: var(--boh-ink);
 }
+.character-info-box {
+  border: 3px solid var(--boh-wood-dark);
+  box-shadow: inset 0 -3px 0 rgba(43, 20, 28, 0.15), 0 3px 0 rgba(0, 0, 0, 0.4);
+}
+/* Portrait in a gilded frame */
 .character-picture {
-  border: 5px solid var(--boh-teal);
-  border-radius: 15px 50px;
+  border: 4px solid var(--boh-candle);
+  box-shadow: 0 0 0 4px var(--boh-wood-dark), 0 0 22px rgba(242, 154, 46, 0.35);
   max-width: calc(100% - 2rem);
   height: auto;
 }
 .character-info-input {
   background-color: transparent;
-  color: var(--boh-teal-text);
+  color: var(--boh-ink);
   text-align: center;
   border: none;
   width: 100%;
@@ -23,8 +31,10 @@ label {
 }
 /* STAT SPECIFIC */
 .stat-block-box {
-  background-color: var(--boh-beige);
-  border: 5px solid var(--boh-teal);
+  background-color: var(--boh-parchment-dark);
+  border: 3px solid var(--boh-wood-dark);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(43, 20, 28, 0.2);
+  color: var(--boh-ink);
 }
 .stat-block-box h4 {
   font-size: 1.1rem;
@@ -41,9 +51,7 @@ label {
   }
 }
 .stat-block-info {
-  background-color: var(--boh-surface);
-  color: var(--boh-teal-text);
-  border: 2px solid var(--boh-teal);
+  border: 2px solid var(--boh-wood);
   width: 90%;
   text-align: center;
   margin: 5px;
@@ -96,7 +104,7 @@ label {
 .consumableCount {
   background-color: transparent;
   text-align: center;
-  color: var(--boh-teal-text);
+  color: var(--boh-ink);
   border: none;
   width: 100%;
   font-size: larger;
@@ -105,18 +113,54 @@ label {
   margin: 5px;
   width: 25%;
 }
+/* Remove a consumable: small burgundy button, asks "Remove?" before deleting */
+.remove-consumable-button {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0 0.4rem;
+  background-color: transparent;
+  border: 2px solid var(--boh-burgundy);
+  border-radius: 2px;
+  color: var(--boh-burgundy);
+  font-weight: bold;
+  white-space: nowrap;
+}
+.remove-consumable-button:hover {
+  background-color: var(--boh-parchment-dark);
+}
+.remove-consumable-button.confirm {
+  background-color: var(--boh-burgundy);
+  border-color: var(--boh-wood-dark);
+  color: var(--boh-parchment);
+  box-shadow: var(--pixel-bevel);
+}
+/* Modals: burgundy header and footer around parchment, in the wooden frame */
+.modal-content {
+  border: 16px solid var(--boh-wood);
+  border-image: var(--boh-wood-frame);
+  border-radius: 0;
+}
 .modal-header {
-  background-color: var(--boh-red);
-  color: var(--boh-surface);
+  background: url("/art/tapestry.svg") 0 0 / 32px 32px, var(--boh-burgundy);
+  color: var(--boh-candle-light);
+  border-bottom: 3px solid var(--boh-wood-dark);
+  border-radius: 0;
   padding: 5%;
 }
+.modal-header .btn-close {
+  /* Bootstrap's dark X, made light for the burgundy header */
+  filter: invert(1) grayscale(1) brightness(2);
+}
 .modal-body {
-  background-color: var(--boh-beige);
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  color: var(--boh-ink);
   font-size: larger;
 }
 .modal-footer {
-  background-color: var(--boh-red);
-  color: var(--boh-surface);
+  background: url("/art/tapestry.svg") 0 0 / 32px 32px, var(--boh-burgundy);
+  color: var(--boh-parchment);
+  border-top: 3px solid var(--boh-wood-dark);
+  border-radius: 0;
   padding: 5%;
 }
 .close-modal-btn {
@@ -125,21 +169,19 @@ label {
 }
 
 .new-consumable-input {
-  background-color: var(--boh-surface);
-  color: var(--boh-teal-text);
   text-align: center;
-  border: none;
+  border: 2px solid var(--boh-wood);
   width: 100%;
   font-size: larger;
 }
 table {
   text-align: left;
-  background-color: var(--boh-surface);
-  border: 5px solid var(--boh-teal);
-  color: var(--boh-teal-text);
+  background: var(--boh-parchment-texture), var(--boh-parchment);
+  border: 3px solid var(--boh-wood-dark);
+  color: var(--boh-ink);
 }
 th {
-  border: 5px solid var(--boh-teal);
+  border: 2px solid var(--boh-wood);
 }
 /* PROFICIENCY TOGGLES (skills and saving throws) */
 .proficiency-toggle {
@@ -156,13 +198,22 @@ th {
   cursor: pointer;
 }
 .proficiency-toggle:focus-visible {
-  outline: 2px solid var(--boh-teal);
+  outline: 2px solid var(--boh-burgundy);
   border-radius: 3px;
 }
-/* DELETE CHARACTER */
+/* SAVE AND DELETE CHARACTER */
 .save-button {
   width: 100%;
   min-height: 2.75rem;
+}
+/* The save button also carries .character-info-box; keep it ivy like the other accent buttons */
+.character-info-box.save-button {
+  background: var(--boh-ivy);
+  color: var(--boh-parchment);
+  box-shadow: var(--pixel-bevel);
+}
+.character-info-box.save-button:hover {
+  background: var(--boh-ivy-light);
 }
 .delete-character-button {
   min-height: 2.25rem;
@@ -180,9 +231,9 @@ th {
 }
 .cancel-delete-button {
   background: transparent;
-  border: 1px solid var(--boh-surface);
+  border: 1px solid var(--boh-parchment);
   border-radius: 4px;
-  color: var(--boh-surface);
+  color: var(--boh-parchment);
   font-size: 0.85rem;
   padding: 0.25rem 0.6rem;
   margin: 0.25rem;

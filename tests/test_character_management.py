@@ -93,6 +93,18 @@ def test_lists_keep_a_stable_order_after_updates(client, make_user, make_charact
         assert ids == sorted(ids), field
 
 
+def test_owner_can_delete_consumable(client, make_user, make_character):
+    _, headers = make_user()
+    character = make_character(headers)
+    consumable = client.post("/api/consumable", headers=headers,
+                             json={"character_id": character["id"], "name": "Potion"}).get_json()["Consumable Created"]
+
+    assert client.delete("/api/consumable", headers=headers, json={"id": consumable["id"]}).status_code == 200
+    reloaded = client.get(f"/api/character/{character['id']}", headers=headers).get_json()["character"]
+    assert reloaded["consumables"] == []
+    assert client.delete("/api/consumable", headers=headers, json={"id": consumable["id"]}).status_code == 404
+
+
 def test_new_character_starts_with_level_1_proficiency(client, make_user, make_character):
     _, headers = make_user()
     character = make_character(headers)
