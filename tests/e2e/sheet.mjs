@@ -2,7 +2,7 @@
 import { api, createCharacter } from "./lib.mjs";
 
 export async function run(b, { token }) {
-    const { check, goto, waitFor, evaluate, type, blur, clickText, sleep, requests } = b;
+    const { check, goto, waitFor, evaluate, type, blur, clickText, sleep, requests, text } = b;
     const character = await createCharacter(token, "Testy");
     const statId = name => character.stats.find(s => s.name === name).id;
     // DEX 16 (+3), WIS 14 (+2), proficiency +2; no skill proficiencies
@@ -75,6 +75,15 @@ export async function run(b, { token }) {
     await type("input.consumableCount", "3"); await blur(); await sleep(800);
     const consumables = (await load()).consumables;
     check("consumable: new row's amount saved", consumables[0]?.amount === 3, JSON.stringify(consumables));
+
+    // Removing asks once, then deletes the row
+    requests.length = 0;
+    await evaluate(`document.querySelector(".remove-consumable-button").click(), true`); await sleep(300);
+    check("consumable remove: first click only asks", requests.length === 0 && (await evaluate(`document.querySelector(".remove-consumable-button").innerText.trim()`)) === "Remove?", JSON.stringify(requests));
+    await evaluate(`document.querySelector(".remove-consumable-button").click(), true`); await sleep(900);
+    check("consumable remove: one DELETE", requests.filter(r => r === "DELETE /api/consumable").length === 1, JSON.stringify(requests));
+    check("consumable remove: row gone from the server", (await load()).consumables.length === 0, JSON.stringify((await load()).consumables));
+    check("consumable remove: empty message shown", (await text()).includes("No consumables yet"));
 
     // Character creator: subclasses follow the chosen class
     await goto("/charactercreator");

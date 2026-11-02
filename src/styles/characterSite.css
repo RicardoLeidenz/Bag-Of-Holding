@@ -113,6 +113,27 @@ label {
   margin: 5px;
   width: 25%;
 }
+/* Remove a consumable: small burgundy button, asks "Remove?" before deleting */
+.remove-consumable-button {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0 0.4rem;
+  background-color: transparent;
+  border: 2px solid var(--boh-burgundy);
+  border-radius: 2px;
+  color: var(--boh-burgundy);
+  font-weight: bold;
+  white-space: nowrap;
+}
+.remove-consumable-button:hover {
+  background-color: var(--boh-parchment-dark);
+}
+.remove-consumable-button.confirm {
+  background-color: var(--boh-burgundy);
+  border-color: var(--boh-wood-dark);
+  color: var(--boh-parchment);
+  box-shadow: var(--pixel-bevel);
+}
 /* Modals: burgundy header and footer around parchment, in the wooden frame */
 .modal-content {
   border: 16px solid var(--boh-wood);
